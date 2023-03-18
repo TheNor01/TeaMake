@@ -35,11 +35,11 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.register_main);
         edTextMail = findViewById(R.id.emailEdit);
         edTextPw = findViewById(R.id.passwordEdit);
 
-        registerButton = findViewById(R.id.registerButton);
+        registerButton = findViewById(R.id.signUpButton);
         mAuth = FirebaseAuth.getInstance();
 
 
@@ -54,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this,"Please, Enter a valid email or password" , Toast.LENGTH_LONG).show();
                 }else{
                     CreateUserDb(email,pw);
+                    // add Intent to main
                 }
             }
         });
