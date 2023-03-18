@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "439631054436",
+    "firebase_url": "https://teamake-465c1-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "teamake-465c1",
+    "storage_bucket": "teamake-465c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439631054436:android:4631ca7e44e813a6abc171",
+        "android_client_info": {
+          "package_name": "com.example.teamake"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439631054436-42drmlpdft1vpq09inm0jd35rj73l55a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsgbcqpp_T4Dfk1wSgqX73-pnMa1Z8EtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439631054436-42drmlpdft1vpq09inm0jd35rj73l55a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
