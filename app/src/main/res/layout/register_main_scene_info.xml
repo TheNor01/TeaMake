@@ -7,9 +7,7 @@
     android:orientation="vertical"
     android:background="@color/teal_700"
     android:id="@+id/parentRegistration"
-    tools:context=".RegisterActivity">
-
-
+    tools:context=".RegisterActivityInfo">
 
     <LinearLayout
         android:layout_width="match_parent"
