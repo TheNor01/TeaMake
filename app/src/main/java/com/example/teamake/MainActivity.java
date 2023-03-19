@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         mAuth = FirebaseAuth.getInstance();
 
+
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,35 +64,11 @@ public class MainActivity extends AppCompatActivity {
                 if(email.isEmpty() || pw.isEmpty()){
                     Toast.makeText(MainActivity.this,"Please, Enter a valid email or password" , Toast.LENGTH_LONG).show();
                 }
-                else{
-                    LoginUserDb(email,pw);
-
-                }
-            }
-
-            private void LoginUserDb(String email,String password) {
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(MainActivity.this, "Authentication completed successfully.", Toast.LENGTH_SHORT).show();
-                                    Intent intentProfile = new Intent(getApplicationContext(),HomepageActivity.class);
-                                    startActivity(intentProfile);
-                                    finish();
-
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                else LoginUserDb(email,pw);
             }
         });
 
     }
-
 
     @Override
     public void onStart() {
@@ -103,4 +81,27 @@ public class MainActivity extends AppCompatActivity {
             //finish();
         }
     }
+
+    private void LoginUserDb(String email,String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Toast.makeText(MainActivity.this, "Authentication completed successfully.", Toast.LENGTH_SHORT).show();
+                            Intent intentProfile = new Intent(getApplicationContext(),HomepageActivity.class);
+                            startActivity(intentProfile);
+                            finish();
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+
 }

@@ -3,4 +3,7 @@
     <string name="login">LOGIN</string>
     <string name="nickname">Nickname</string>
     <string name="register">Register Now</string>
+    <string name="soccer">Soccer</string>
+    <string name="tennis">Tennis</string>
+    <string name="Basket">Basket</string>
 </resources>

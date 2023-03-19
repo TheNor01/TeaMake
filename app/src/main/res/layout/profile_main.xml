@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
+
     tools:context=".RegisterActivity">
 
 
@@ -20,6 +21,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_launcher_foreground"
         tools:srcCompat="@tools:sample/avatars" />
 
     <LinearLayout
@@ -123,9 +125,10 @@
             android:id="@+id/statsTv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="12dp"
+
             android:layout_weight="1"
             android:gravity="center"
+            android:background="#94DA43"
             android:text="My Stats"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -134,7 +137,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/teal_700"
+            android:background="#94DA43"
             android:gravity="center"
             android:text="Matches"
             app:layout_constraintStart_toStartOf="parent" />
@@ -144,6 +147,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="#94DA43"
             android:gravity="center"
             android:text="My Friends" />
     </LinearLayout>
