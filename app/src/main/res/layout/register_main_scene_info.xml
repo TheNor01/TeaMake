@@ -84,16 +84,19 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/checkSoccer"
             android:text="@string/soccer">
         </CheckBox>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/checkTennis"
             android:text="@string/tennis">
         </CheckBox>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/checkBasket"
             android:text="@string/Basket">
         </CheckBox>
 

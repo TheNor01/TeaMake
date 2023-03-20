@@ -38,9 +38,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     //Singleton mAuth firebase connection
     private FirebaseAuth mAuth;
-    private Scene infoRegistration;
+    public static final String TAG = "RegisterActivity";
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +49,6 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         int sceneRoot = R.id.registrationForm;
-        infoRegistration = Scene.getSceneForLayout((ViewGroup) findViewById(sceneRoot),R.layout.register_main_scene_info,this);
 
         registerButton = findViewById(R.id.signUpButton);
         mAuth = FirebaseAuth.getInstance();

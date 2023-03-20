@@ -21,21 +21,32 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class HomepageActivity extends AppCompatActivity  {
 
 
-    FirebaseAuth auth;
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
     FirebaseUser userLogged;
     TextView profileNameTV;
+    TextView sportNameTv;
 
     ImageView imageViewProfile;
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
@@ -59,7 +70,7 @@ public class HomepageActivity extends AppCompatActivity  {
 
     private static final String TAG = "HomepageActivity";
     private static final Integer MY_PERMISSIONS_REQUEST_READ_MEDIA = 0;
-    private static final Integer UriCode = 0;
+    private final String collectionInfoUser = "UserBasicInfo";
 
     private int permissionCheckRead = 0 ;
 
@@ -68,18 +79,38 @@ public class HomepageActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_main);
         profileNameTV = findViewById(R.id.profileNameTV);
+        sportNameTv = findViewById(R.id.bestSports);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
         permissionCheckRead = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
 
-        auth = FirebaseAuth.getInstance();
         userLogged = auth.getCurrentUser();
+        Log.i(TAG,"LOGGED USER:"+userLogged.getUid());
         if(userLogged == null){
             Intent backToLogin =  new Intent(getApplicationContext(),MainActivity.class);
             startActivity(backToLogin);
             finish();
         }else{
-            profileNameTV.setText(userLogged.getEmail());
+            //Getting info about logger users
+            FireDb.collection(collectionInfoUser).document(userLogged.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        String nickname = task.getResult().get("Nickname").toString();
+                        List<String> sports = (List<String>) task.getResult().get("Sports");
+
+                        String sportsAsString =  sports.stream().map(n -> String.valueOf(n)).collect(Collectors.joining(","));
+
+                        Log.i(TAG, nickname);
+                        profileNameTV.setText(nickname);
+                        sportNameTv.setText(sportsAsString);
+
+                        //Add sync task -- login sergio -- but it shows Kamado
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }
+            });
         }
 
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
