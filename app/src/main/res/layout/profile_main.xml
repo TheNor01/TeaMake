@@ -5,10 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="vertical">
 
-    tools:context=".RegisterActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="648dp"
+        android:layout_height="38dp"
+        android:background="@color/green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </androidx.appcompat.widget.Toolbar>
 
+
+    <TextView
+        android:layout_width="114dp"
+        android:layout_height="34dp"
+        android:text="@string/app_name"
+        android:layout_marginStart="16dp"
+        android:gravity="left"
+        app:layout_constraintBottom_toTopOf="@+id/imageViewMainPic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="11dp"
+        android:background="?android:selectableItemBackground"
+        android:src="@drawable/baseline_search_24"
+        app:layout_constraintBottom_toBottomOf="@+id/toolBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.965"
+        app:layout_constraintStart_toStartOf="parent"></ImageButton>
 
     <ImageView
         android:id="@+id/imageViewMainPic"
@@ -46,7 +76,6 @@
                 android:id="@+id/profileNameTV"
                 android:layout_width="142dp"
                 android:layout_height="wrap_content"
-                android:text="@string/nickname"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -68,19 +97,22 @@
             </ImageView>
         </LinearLayout>
 
-        <TextView
+        <EditText
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="TextView" />
+            android:textSize="12dp"
+            android:maxLength="20"
+            android:hint="Add a state"
+             />
 
         <TextView
             android:id="@+id/bestSports"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="TextView"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
@@ -125,7 +157,6 @@
             android:id="@+id/statsTv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-
             android:layout_weight="1"
             android:gravity="center"
             android:background="#94DA43"

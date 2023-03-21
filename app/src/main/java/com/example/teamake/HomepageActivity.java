@@ -48,6 +48,7 @@ public class HomepageActivity extends AppCompatActivity  {
     TextView profileNameTV;
     TextView sportNameTv;
 
+
     ImageView imageViewProfile;
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -78,11 +79,12 @@ public class HomepageActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState ){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_main);
+
+
         profileNameTV = findViewById(R.id.profileNameTV);
         sportNameTv = findViewById(R.id.bestSports);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
         permissionCheckRead = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
-
 
         userLogged = auth.getCurrentUser();
         Log.i(TAG,"LOGGED USER:"+userLogged.getUid());

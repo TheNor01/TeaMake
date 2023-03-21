@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextInputEditText edTextMail,edTextPw;
     Button loginButton;
     Button registerButton;
-    Toast toast;
+    ProgressBar pgLoad;
 
     private static final String TAG = "MainActivity";
 
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         edTextMail = findViewById(R.id.emailEdit);
         edTextPw = findViewById(R.id.passwordEdit);
+        pgLoad = findViewById(R.id.progressBar);
+        pgLoad.setVisibility(View.INVISIBLE);
 
         loginButton = findViewById(R.id.loginButton);
         registerButton = findViewById(R.id.registerButton);
@@ -71,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     private void LoginUserDb(String email,String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -81,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Authentication completed successfully.", Toast.LENGTH_SHORT).show();
                             Intent intentProfile = new Intent(getApplicationContext(),HomepageActivity.class);
                             startActivity(intentProfile);
-                            finish();
+                            //finish();
 
                         } else {
                             // If sign in fails, display a message to the user.

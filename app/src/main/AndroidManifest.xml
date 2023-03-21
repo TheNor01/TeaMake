@@ -33,14 +33,25 @@
 
 
         <activity
-            android:name=".MainActivity"
-            android:launchMode="singleInstance"
+            android:name=".MatchesActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" /> <!-- launch activity as first -->
             </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleInstance"
+            android:exported="true">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" /> &lt;!&ndash; launch activity as first &ndash;&gt;-->
+<!--            </intent-filter>-->
         </activity>
     </application>
 
