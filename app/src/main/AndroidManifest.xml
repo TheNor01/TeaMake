@@ -35,6 +35,11 @@
         <activity
             android:name=".MatchesActivity"
             android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".CreateMatchActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,11 +52,6 @@
             android:name=".MainActivity"
             android:launchMode="singleInstance"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" /> &lt;!&ndash; launch activity as first &ndash;&gt;-->
-<!--            </intent-filter>-->
         </activity>
     </application>
 

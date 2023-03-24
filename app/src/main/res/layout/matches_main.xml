@@ -27,7 +27,7 @@
             app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="34dp"
-            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+            tools:src="@tools:sample/backgrounds/scenic" />
 
         <TextView
             android:id="@+id/editTextTextPersonName"

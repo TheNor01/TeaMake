@@ -51,7 +51,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_launcher_foreground"
         tools:srcCompat="@tools:sample/avatars" />
 
     <LinearLayout
@@ -164,13 +163,13 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/matchTv"
+            android:id="@+id/createMatchTv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="#94DA43"
             android:gravity="center"
-            android:text="Matches"
+            android:text="Create a match"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView

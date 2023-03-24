@@ -48,6 +48,8 @@ public class HomepageActivity extends AppCompatActivity  {
     TextView profileNameTV;
     TextView sportNameTv;
 
+    TextView createMatchTv;
+
 
     ImageView imageViewProfile;
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
@@ -82,8 +84,10 @@ public class HomepageActivity extends AppCompatActivity  {
 
 
         profileNameTV = findViewById(R.id.profileNameTV);
+        createMatchTv = findViewById(R.id.createMatchTv);
         sportNameTv = findViewById(R.id.bestSports);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
+
         permissionCheckRead = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
         userLogged = auth.getCurrentUser();
@@ -114,6 +118,14 @@ public class HomepageActivity extends AppCompatActivity  {
                 }
             });
         }
+
+        createMatchTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentCreateMatch= new Intent(getApplicationContext(),CreateMatchActivity.class);
+                startActivity(intentCreateMatch);
+            }
+        });
 
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +181,7 @@ public class HomepageActivity extends AppCompatActivity  {
                     })
                     .create().show();
 
-            Log.i(TAG,"Granted PEermission with alert dialog");
+            Log.i(TAG,"Granted Permission with alert dialog");
         }
         else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);

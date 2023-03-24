@@ -48,7 +48,10 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         MatchItem currentMatch = matchList.get(position);
 
         holder.sportImage.setImageResource(currentMatch.getSportImg());
-
+        holder.sportTypeMatch.setText(currentMatch.getSportTypeText());
+        holder.sportDateMatch.setText(currentMatch.getDateMatch());
+        holder.sportScore1.setText(currentMatch.getScoreTeam1());
+        holder.sportScore2.setText(currentMatch.getScoreTeam2());
 
     }
 
