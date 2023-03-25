@@ -1,6 +1,7 @@
 package com.example.teamake;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -29,11 +30,10 @@ public class CreateMatchActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerViewList1,mRecyclerViewList2;
     private PlayersAdapter mAdapter1,mAdapter2;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     String[] sports = {"Tennis","Basket","Soccer"};
     Spinner spinnerSport;
-    Button addPlayerBtn,removePlayerBtn;
+    Button addPlayerBtn,removePlayerBtn,createMatchButton;
     TextView countPlayers,datePicker;
 
     private DatePickerDialog.OnDateSetListener dateListener;
@@ -50,6 +50,7 @@ public class CreateMatchActivity extends AppCompatActivity {
         removePlayerBtn= findViewById(R.id.removePlayerBtn);
         countPlayers = findViewById(R.id.playersCount);
         datePicker = findViewById(R.id.tvDate);
+        createMatchButton = findViewById(R.id.createMatchButton);
 
 
         buildRecyclerView();
@@ -120,8 +121,7 @@ public class CreateMatchActivity extends AppCompatActivity {
                 int day = cal.get(Calendar.DAY_OF_MONTH);
 
                 DatePickerDialog dialog = new DatePickerDialog(CreateMatchActivity.this,
-                        android.R.style.Theme_DeviceDefault_Light_DialogWhenLarge_NoActionBar,dateListener, year,month,day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        android.R.style.Theme_DeviceDefault_Dialog_MinWidth,dateListener, year,month,day);
                 dialog.show();
             }
         });
@@ -129,14 +129,45 @@ public class CreateMatchActivity extends AppCompatActivity {
         dateListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePickerLocal,  int year, int month, int day) {
-                Log.d("CreateMatch", "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
-                String date = month + "/" + day + "/" + year;
+                Log.d("CreateMatch", "onDateSet: dd/mm/yyy: " + day + "/" + month + "/" + year);
+                month ++;  // from 0 to 11
+                String date = day + "/" + month + "/" + year;
                 datePicker.setText(date);
             }
         };
 
 
+        createMatchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int countPlayersValue = Integer.parseInt(countPlayers.getText().toString());
+                String choosedSport = spinnerSport.getSelectedItem().toString();
+                String choosedDate = datePicker.getText().toString();
+
+
+                if(choosedSport.isEmpty()){
+                    Toast.makeText(CreateMatchActivity.this, "Choose a sport", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(choosedDate.isEmpty() || !choosedDate.matches(".*\\d.*")){
+                    Toast.makeText(CreateMatchActivity.this, "Choose a valid date", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.i("CreateMatch","Creating match.. INFO:");
+                Log.i("CreateMatch","Players for team = "+countPlayersValue);
+                Log.i("CreateMatch","Sport choosed = "+choosedSport);
+                Log.i("CreateMatch","Date choosed = "+choosedDate);
+
+
+            }
+        });
+
     }
+
+
     public void insertItem(int position) {
         teamList1.add(position, new PlayerItem(R.drawable.baseline_group_add_24,"Player"));
         teamList2.add(position, new PlayerItem(R.drawable.baseline_group_add_24,"Player"));
@@ -167,6 +198,10 @@ public class CreateMatchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position) {
                 teamList1.get(position).setNicknameToLooking("Looking for..");
+
+                Intent invitePlayers = new Intent(getApplicationContext(),PlayersListActivity.class);
+                startActivity(invitePlayers);
+
                 mAdapter1.notifyItemChanged(position);
             }
         });
