@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,6 +42,44 @@ public class CreateMatchActivity extends AppCompatActivity {
     TextView countPlayers,datePicker;
 
     private DatePickerDialog.OnDateSetListener dateListener;
+
+    ActivityResultLauncher<Intent> activityResultLauncher =
+            registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),  new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+
+                    Log.i("CreateMatch -- Activity result CODE", String.valueOf(result.getResultCode()));
+
+                    if(result.getResultCode() == 444) {
+                        String UID;
+                        Integer position;
+                        Integer team;
+                        Intent data = result.getData();
+                        if(data != null) {
+                            System.out.println(data);
+                            UID = data.getStringExtra("UID");
+                            position = Integer.parseInt(data.getStringExtra("position"));
+                            team = Integer.parseInt(data.getStringExtra("team"));
+
+
+                            Log.i("CreateMatch -- results:",UID+"- at "+position+" TEAM "+team);
+
+                            if(team==1){
+                                teamList1.get(position).setNicknameToLooking(UID);
+                                teamList1.get(position).setImageToPlayersPending();
+                                mAdapter1.notifyItemChanged(position);
+                            }else {
+                                teamList2.get(position).setNicknameToLooking(UID);
+                                teamList2.get(position).setImageToPlayersPending();
+                                mAdapter2.notifyItemChanged(position);
+                            }
+                        }
+                    }
+                }
+            });
+
+
 
 
 
@@ -160,8 +203,6 @@ public class CreateMatchActivity extends AppCompatActivity {
                 Log.i("CreateMatch","Players for team = "+countPlayersValue);
                 Log.i("CreateMatch","Sport choosed = "+choosedSport);
                 Log.i("CreateMatch","Date choosed = "+choosedDate);
-
-
             }
         });
 
@@ -169,8 +210,8 @@ public class CreateMatchActivity extends AppCompatActivity {
 
 
     public void insertItem(int position) {
-        teamList1.add(position, new PlayerItem(R.drawable.baseline_group_add_24,"Player"));
-        teamList2.add(position, new PlayerItem(R.drawable.baseline_group_add_24,"Player"));
+        teamList1.add(position, new PlayerItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
+        teamList2.add(position, new PlayerItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
         mAdapter1.notifyItemInserted(position);
         mAdapter2.notifyItemInserted(position);
     }
@@ -198,11 +239,15 @@ public class CreateMatchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position) {
                 teamList1.get(position).setNicknameToLooking("Looking for..");
+                mAdapter1.notifyItemChanged(position);
+
 
                 Intent invitePlayers = new Intent(getApplicationContext(),PlayersListActivity.class);
-                startActivity(invitePlayers);
+                invitePlayers.putExtra("position",position);
+                invitePlayers.putExtra("team",1);
+                //startActivity(invitePlayers);
+                activityResultLauncher.launch(invitePlayers);
 
-                mAdapter1.notifyItemChanged(position);
             }
         });
 
@@ -211,6 +256,12 @@ public class CreateMatchActivity extends AppCompatActivity {
             public void onItemClick(int position) {
                 teamList2.get(position).setNicknameToLooking("Looking for..");
                 mAdapter2.notifyItemChanged(position);
+
+                Intent invitePlayers = new Intent(getApplicationContext(),PlayersListActivity.class);
+                invitePlayers.putExtra("position",position);
+                invitePlayers.putExtra("team",2);
+                //startActivity(invitePlayers);
+                activityResultLauncher.launch(invitePlayers);
             }
         });
 
@@ -221,7 +272,7 @@ public class CreateMatchActivity extends AppCompatActivity {
         mRecyclerViewList1.setAdapter(mAdapter1);
         mRecyclerViewList2.setAdapter(mAdapter2);
 
-        teamList1.add(new PlayerItem(R.drawable.baseline_group_add_24,"Player"));
-        teamList2.add(new PlayerItem(R.drawable.baseline_group_add_24,"Player"));
+        teamList1.add(new PlayerItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
+        teamList2.add(new PlayerItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
     }
 }

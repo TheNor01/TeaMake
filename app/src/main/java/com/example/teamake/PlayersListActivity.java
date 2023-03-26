@@ -1,6 +1,8 @@
 package com.example.teamake;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -28,7 +30,6 @@ public class PlayersListActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private CollectionReference playersRef = db.collection("UserBasicInfo");
-
     PlayersAdapter playersAdapter;
     RecyclerView playersViewList;
     ArrayList<PlayerItem> playersArrayList;
@@ -61,8 +62,6 @@ public class PlayersListActivity extends AppCompatActivity {
 
     private void EventChangeListener(){
 
-
-
         playersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -78,19 +77,65 @@ public class PlayersListActivity extends AppCompatActivity {
                         DocumentSnapshot doc =  dc.getDocument();
 
                         String nickname = doc.getString("Nickname");
+                        String UID = doc.getId();
 
-                        PlayerItem PI = new PlayerItem(R.drawable.baseline_person_24,nickname);
+                        PlayerItem PI = new PlayerItem(R.drawable.baseline_person_24,nickname,UID);
+                        Log.i("PlayerList Activity","ADDED:"+PI.getUID());
+
+
                         playersArrayList.add(PI);
                     }
 
                 }
 
-                playersAdapter.notifyDataSetChanged();
-
-
+                buildRecyclerView();
 
             }
         });
+
+    }
+
+    public void buildRecyclerView() {
+        playersViewList = findViewById(R.id.listPlayers);
+
+        playersViewList.setHasFixedSize(true);
+
+
+        playersAdapter = new PlayersAdapter(playersArrayList);
+        playersViewList.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        playersViewList.setAdapter(playersAdapter);
+
+        playersAdapter.setOnItemClickLister(new PlayersAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                playersArrayList.get(position).setImageToPlayersPending();
+                playersAdapter.notifyItemChanged(position);
+
+                String localUid = playersArrayList.get(position).getUID();
+
+                Log.i("PlayersList","Inviting... ="+localUid);
+
+
+                Bundle extras = getIntent().getExtras();
+
+                String localPosition = extras.get("position").toString();
+                String localTeam = extras.get("team").toString();
+                Log.i("PlayersList",  "calling intent position: "+localPosition);
+
+
+               // System.out.println(positionListView);
+
+
+
+                Intent intent = new Intent();
+                intent.putExtra("UID", localUid);
+                intent.putExtra("position",localPosition);
+                intent.putExtra("team",localTeam);
+                setResult(444, intent);
+                finish();
+            }
+        });
+
 
 
     }
