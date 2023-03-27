@@ -26,6 +26,11 @@ public class PlayerItem {
         nicknameText = text;
     }
 
+    public void setUID(String text){
+        UID = text;
+    }
+
+
     public void setImageToPlayersPending(){
         this.inviteImg=R.drawable.baseline_how_to_reg_24;
     }

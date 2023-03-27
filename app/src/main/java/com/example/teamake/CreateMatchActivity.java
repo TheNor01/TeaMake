@@ -2,9 +2,6 @@ package com.example.teamake;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,13 +17,25 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateMatchActivity extends AppCompatActivity {
 
@@ -41,7 +50,12 @@ public class CreateMatchActivity extends AppCompatActivity {
     Button addPlayerBtn,removePlayerBtn,createMatchButton;
     TextView countPlayers,datePicker;
 
+    Map<String, Object> matchMap = new HashMap<>();
+    ArrayList<String> team1UIDs,team2UIDs;
+
     private DatePickerDialog.OnDateSetListener dateListener;
+
+    private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
     ActivityResultLauncher<Intent> activityResultLauncher =
             registerForActivityResult(
@@ -52,27 +66,37 @@ public class CreateMatchActivity extends AppCompatActivity {
                     Log.i("CreateMatch -- Activity result CODE", String.valueOf(result.getResultCode()));
 
                     if(result.getResultCode() == 444) {
-                        String UID;
+                        String UID,nickname;
                         Integer position;
                         Integer team;
                         Intent data = result.getData();
                         if(data != null) {
                             System.out.println(data);
                             UID = data.getStringExtra("UID");
+                            nickname = data.getStringExtra("nickname");
                             position = Integer.parseInt(data.getStringExtra("position"));
                             team = Integer.parseInt(data.getStringExtra("team"));
 
 
-                            Log.i("CreateMatch -- results:",UID+"- at "+position+" TEAM "+team);
+                            Log.i("CreateMatch -- results:",UID+" - at "+position+" TEAM "+team);
 
-                            if(team==1){
-                                teamList1.get(position).setNicknameToLooking(UID);
-                                teamList1.get(position).setImageToPlayersPending();
-                                mAdapter1.notifyItemChanged(position);
-                            }else {
-                                teamList2.get(position).setNicknameToLooking(UID);
-                                teamList2.get(position).setImageToPlayersPending();
-                                mAdapter2.notifyItemChanged(position);
+                            boolean isAlreadyPresent = teamList1.stream().anyMatch(o -> UID.equals(o.getUID()));
+                            boolean isAlreadyPresent2 = teamList2.stream().anyMatch(o -> UID.equals(o.getUID()));
+
+                            if(isAlreadyPresent || isAlreadyPresent2) Toast.makeText(CreateMatchActivity.this, "User already invited", Toast.LENGTH_SHORT).show();
+
+                            else {
+                                if (team == 1) {
+                                    teamList1.get(position).setNicknameToLooking(nickname);
+                                    teamList1.get(position).setUID(UID);
+                                    teamList1.get(position).setImageToPlayersPending();
+                                    mAdapter1.notifyItemChanged(position);
+                                } else {
+                                    teamList2.get(position).setNicknameToLooking(nickname);
+                                    teamList2.get(position).setUID(UID);
+                                    teamList2.get(position).setImageToPlayersPending();
+                                    mAdapter2.notifyItemChanged(position);
+                                }
                             }
                         }
                     }
@@ -199,10 +223,59 @@ public class CreateMatchActivity extends AppCompatActivity {
                     return;
                 }
 
+
+
                 Log.i("CreateMatch","Creating match.. INFO:");
                 Log.i("CreateMatch","Players for team = "+countPlayersValue);
                 Log.i("CreateMatch","Sport choosed = "+choosedSport);
                 Log.i("CreateMatch","Date choosed = "+choosedDate);
+                Log.i("CreateMatch","Team1 = "+teamList1.size());
+                Log.i("CreateMatch","Team2 = "+teamList2.size());
+
+                matchMap.put("Date", choosedDate);
+                matchMap.put("Sport", choosedSport);
+                matchMap.put("Status", "Pending");
+
+                team1UIDs = new ArrayList<>();
+                team2UIDs = new ArrayList<>();
+
+
+
+
+                for(PlayerItem pi : teamList1){
+                    if(pi.getUID().equals("Dummy")){
+                        Log.i("CreateMatch","TEAM1"+pi.getUID());
+                        Toast.makeText(CreateMatchActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    else team1UIDs.add(pi.getUID());
+                }
+
+                for(PlayerItem pi : teamList2){
+                    if(pi.getUID().equals("Dummy")){
+                        Log.i("CreateMatch","TEAM2"+pi.getUID());
+                        Toast.makeText(CreateMatchActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    else team2UIDs.add(pi.getUID());
+                }
+
+                matchMap.put("Team1",team1UIDs);
+                matchMap.put("Team2",team2UIDs);
+
+                FireDb.collection("Matches").add(matchMap)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d("CreateMatch", "DocumentSnapshot MATCH written with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("CreateMatch", "Error adding document", e);
+                            }
+                        });
             }
         });
 

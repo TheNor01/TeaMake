@@ -112,6 +112,7 @@ public class PlayersListActivity extends AppCompatActivity {
                 playersAdapter.notifyItemChanged(position);
 
                 String localUid = playersArrayList.get(position).getUID();
+                String localNickname = playersArrayList.get(position).getNicknameText();
 
                 Log.i("PlayersList","Inviting... ="+localUid);
 
@@ -131,6 +132,7 @@ public class PlayersListActivity extends AppCompatActivity {
                 intent.putExtra("UID", localUid);
                 intent.putExtra("position",localPosition);
                 intent.putExtra("team",localTeam);
+                intent.putExtra("nickname",localNickname);
                 setResult(444, intent);
                 finish();
             }
