@@ -268,6 +268,9 @@ public class CreateMatchActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Log.d("CreateMatch", "DocumentSnapshot MATCH written with ID: " + documentReference.getId());
+
+                                sendPlayerNotification(documentReference.getId());
+                                finish();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -347,5 +350,37 @@ public class CreateMatchActivity extends AppCompatActivity {
 
         teamList1.add(new PlayerItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
         teamList2.add(new PlayerItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
+    }
+
+
+    protected void sendPlayerNotification(String id_match){
+        ArrayList<String> allUID = new ArrayList<String>();
+        allUID.addAll(team1UIDs);
+        allUID.addAll(team2UIDs);
+
+        for(String uid: allUID) {
+            HashMap<String, String> localMap = new HashMap<>();
+            localMap.put("id_match", id_match);
+            localMap.put("UID", uid);
+            localMap.put("status", "unread");
+
+            FireDb.collection("Notifications").add(localMap)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.d("CreateMatch", "DocumentSnapshot Notification written with ID: " + documentReference.getId());
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("CreateMatch", "Error adding notifications ", e);
+                        }
+                    });
+        }
+
+
+
     }
 }

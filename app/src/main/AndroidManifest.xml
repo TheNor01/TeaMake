@@ -29,6 +29,11 @@
         <activity
             android:name=".HomepageActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" /> <!-- launch activity as first -->
+            </intent-filter>
         </activity>
 
 
@@ -45,11 +50,7 @@
         <activity
             android:name=".CreateMatchActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" /> <!-- launch activity as first -->
-            </intent-filter>
         </activity>
 
 

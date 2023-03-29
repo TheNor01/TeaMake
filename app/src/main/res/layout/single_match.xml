@@ -33,14 +33,13 @@
 
         <TextView
             android:id="@+id/sportDateMatch"
-            android:layout_width="45dp"
-            android:layout_height="30dp"
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="50dp"
             android:layout_marginTop="20dp"
-            android:text="Date">
-        </TextView>
+            android:text="Date"></TextView>
 
         <TextView
             android:id="@+id/scoreMatch1"
@@ -64,6 +63,17 @@
             android:layout_marginTop="17dp"
             android:text="Score2">
         </TextView>
+
+        <ImageButton
+            android:id="@+id/inviteImCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="343dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/baseline_check_24">
+        </ImageButton>
 
 
     </RelativeLayout>

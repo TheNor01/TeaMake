@@ -47,9 +47,9 @@ public class MatchesActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        matchesList.add(new MatchItem(R.drawable.baseline_sports_soccer_24,"Soccer","2020-02-01",10,20));
-        matchesList.add(new MatchItem(R.drawable.baseline_sports_tennis_24,"Tennis","2020-02-01",10,20));
-        matchesList.add(new MatchItem(R.drawable.baseline_sports_basketball_24,"Basket","2020-02-01",10,20));
+        matchesList.add(new MatchItem("1234",R.drawable.baseline_sports_soccer_24,"Soccer","2020-02-01",10,20,R.drawable.baseline_check_24));
+        matchesList.add(new MatchItem("12345",R.drawable.baseline_sports_tennis_24,"Tennis","2020-02-01",10,20,R.drawable.baseline_check_24));
+        matchesList.add(new MatchItem("123456",R.drawable.baseline_sports_basketball_24,"Basket","2020-02-01",10,20,R.drawable.baseline_check_24));
 
 
         adapterData = new MatchesAdapter(matchesList);

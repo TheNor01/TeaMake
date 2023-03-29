@@ -47,11 +47,8 @@ public class PlayersListActivity extends AppCompatActivity {
         playersViewList.setLayoutManager(new LinearLayoutManager(this));
 
         playersArrayList = new ArrayList<PlayerItem>();
-
         playersAdapter = new PlayersAdapter(playersArrayList);
-
         playersViewList.setAdapter(playersAdapter);
-
 
 
         EventChangeListener();
