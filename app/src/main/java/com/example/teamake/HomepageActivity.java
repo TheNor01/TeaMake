@@ -45,8 +45,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
+
+//Todo
+// 1) Build service as listener notification
+
 
 public class HomepageActivity extends AppCompatActivity  {
 
@@ -227,13 +233,12 @@ public class HomepageActivity extends AppCompatActivity  {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                System.out.println(document.getId());
                                 String status = document.getString("status");
                                 if(status.equals("unread")) {
                                     String localId = document.getString("id_match");
-                                    Log.i(TAG, document.getId() + " => " + localId + "  ADDING");
+                                    Log.i(TAG, "DOC ID:"+document.getId() + " => ADDING ID MATCH: " + localId);
                                     matchesToDisplayDb.add(localId);
-                                    System.out.println(matchesToDisplayDb.size());
+                                    System.out.println("Size matches:"+ matchesToDisplayDb.size());
 
                                 }
                             }
@@ -261,12 +266,11 @@ public class HomepageActivity extends AppCompatActivity  {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                     String status = document.getString("Status");
-                                    ArrayList<String> team1, team2;
-                                    team1 = (ArrayList<String>) document.get("Team1");
-                                    team2 = (ArrayList<String>) document.get("Team2");
-
+                                    HashMap<String,ArrayList<String>> players;
+                                    players = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
                                     boolean isPlayerInvited = false;
-                                    if (team1.contains(userLogged.getUid()) || team2.contains(userLogged.getUid())) isPlayerInvited = true;
+
+                                    if (players.containsKey(userLogged.getUid())) isPlayerInvited = true;
                                     if (status.equals("Pending") && isPlayerInvited) {
 
                                         Log.i(TAG,"Found matchID: "+document.getId());
@@ -303,12 +307,10 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
     protected void LinkAdapterToList(){
-        System.out.println("SIZE REC VIEW: "+listMatchPending.size());
+        System.out.println("SIZE Pending matches: "+listMatchPending.size());
 
         matchesPendingView.setHasFixedSize(true);
-
         //listMatchPending.add(new MatchItem("xxx", R.drawable.baseline_sports_basketball_24, "basket", "22", 0, 0, R.drawable.baseline_check_24));
-
         mAdapter = new MatchesAdapter(listMatchPending);
         matchesPendingView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         matchesPendingView.setAdapter(mAdapter);
@@ -318,8 +320,62 @@ public class HomepageActivity extends AppCompatActivity  {
             public void onItemClick(int position) {
                 String matchID = listMatchPending.get(position).getMatchID();
                 Log.i(TAG,"Accepting match id"+matchID);
+                Matches.document(matchID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                HashMap<String,ArrayList<String>> playerToUpdate = new HashMap<>();
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.exists()) {
+                                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+
+                                        playerToUpdate = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
+                                        if(playerToUpdate.containsKey(userLogged.getUid())){
+
+                                            ArrayList<String> props = playerToUpdate.get(userLogged.getUid());
+                                            props.set(1, "Accepted");
+                                            playerToUpdate.put(userLogged.getUid(),props);
+                                            Log.i(TAG,"Setting map changes for: "+userLogged.getUid()+"--"+playerToUpdate.get(userLogged.getUid()));
+                                        }
+
+                                       // HashMap<String,String> team1
+                                    } else {
+                                        Log.d(TAG, "No such document");
+                                    }
+                                } else {
+                                    Log.d(TAG, "get failed with ", task.getException());
+                                }
+
+                                if(playerToUpdate.isEmpty()) {
+                                    System.err.println("Map is empty");
+                                }
+                                else{
+                                    ModifyMatchPlayers(playerToUpdate,matchID);
+                                }
+                            }
+                        });
             }
         });
+    }
+
+
+    protected void ModifyMatchPlayers(HashMap<String,ArrayList<String>> mapToUpload,String matchID){
+        Matches.document(matchID).update("Players",mapToUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if (task.isSuccessful()) {
+                    Log.i(TAG,"UPDATED Match id"+matchID);
+                }
+                else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+
+            }
+        });
+
 
     }
 

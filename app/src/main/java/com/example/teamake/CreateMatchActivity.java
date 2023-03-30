@@ -33,6 +33,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -260,8 +261,16 @@ public class CreateMatchActivity extends AppCompatActivity {
                     else team2UIDs.add(pi.getUID());
                 }
 
-                matchMap.put("Team1",team1UIDs);
-                matchMap.put("Team2",team2UIDs);
+                HashMap<String,ArrayList<String>> Players = new HashMap<>();
+
+                //Build map UID : notAcceptedMatch
+
+                for(int i = 0; i<team1UIDs.size(); i++) {
+                    Players.put(team1UIDs.get(i),new ArrayList<>(Arrays.asList("team1", "notAcceptedMatch")));
+                    Players.put(team2UIDs.get(i),new ArrayList<>(Arrays.asList("team2", "notAcceptedMatch")));
+                }
+
+                matchMap.put("Players",Players);
 
                 FireDb.collection("Matches").add(matchMap)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
