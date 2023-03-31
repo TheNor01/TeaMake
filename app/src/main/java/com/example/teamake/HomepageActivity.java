@@ -66,6 +66,8 @@ public class HomepageActivity extends AppCompatActivity  {
     TextView profileNameTV;
     TextView sportNameTv;
     TextView createMatchTv;
+
+    TextView myStats;
     ImageView imageViewProfile;
 
 
@@ -108,6 +110,7 @@ public class HomepageActivity extends AppCompatActivity  {
 
         profileNameTV = findViewById(R.id.profileNameTV);
         createMatchTv = findViewById(R.id.createMatchTv);
+        myStats = findViewById(R.id.statsTv);
         sportNameTv = findViewById(R.id.bestSports);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
 
@@ -117,12 +120,12 @@ public class HomepageActivity extends AppCompatActivity  {
         permissionCheckRead = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
         userLogged = auth.getCurrentUser();
-        Log.i(TAG,"LOGGED USER:"+userLogged.getUid());
         if(userLogged == null){
             Intent backToLogin =  new Intent(getApplicationContext(),MainActivity.class);
             startActivity(backToLogin);
             finish();
         }else{
+            Log.i(TAG,"LOGGED USER:"+userLogged.getUid());
             //Getting info about logger users
             FireDb.collection(collectionInfoUser).document(userLogged.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -152,6 +155,14 @@ public class HomepageActivity extends AppCompatActivity  {
             public void onClick(View view) {
                 Intent intentCreateMatch= new Intent(getApplicationContext(),CreateMatchActivity.class);
                 startActivity(intentCreateMatch);
+            }
+        });
+
+        myStats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentViewMatch= new Intent(getApplicationContext(),MatchesActivity.class);
+                startActivity(intentViewMatch);
             }
         });
 
