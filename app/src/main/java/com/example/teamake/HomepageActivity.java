@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +32,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,8 +46,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +61,7 @@ import java.util.stream.Collectors;
 
 //Todo
 // 1) Build service as listener notification
+// 2) cache img
 
 
 public class HomepageActivity extends AppCompatActivity  {
@@ -59,23 +69,25 @@ public class HomepageActivity extends AppCompatActivity  {
 
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
+
+    private  final StorageReference FireStorage = FirebaseStorage.getInstance().getReference();
     private CollectionReference Notifications = FireDb.collection("Notifications");
     private CollectionReference Matches = FireDb.collection("Matches");
 
     FirebaseUser userLogged;
-    TextView profileNameTV;
-    TextView sportNameTv;
-    TextView createMatchTv;
+    TextView profileNameTV,sportNameTv,createMatchTv,myStats;
 
-    TextView myStats;
+    Button logoutBtn;
+
     ImageView imageViewProfile;
-
 
     // NOTIFICATIONS PENDING MATCHES
     ArrayList<MatchItem> listMatchPending;
     RecyclerView matchesPendingView;
     MatchesAdapter mAdapter;
     //
+
+    HashMap<String,String> linkingNotificationMatches = new HashMap<>();
 
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -91,6 +103,22 @@ public class HomepageActivity extends AppCompatActivity  {
                             uri = data.getData();
                             Log.i(TAG,uri.toString());
                             imageViewProfile.setImageURI(uri);
+                            String referenceStr = "profileImages/"+userLogged.getUid()+"_profileImage.jpg";
+                            StorageReference profileRef = FireStorage.child(referenceStr);
+                            UploadTask uploadTask = profileRef.putFile(uri);
+
+                            uploadTask.addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Handle unsuccessful uploads
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Log.i(TAG,"Data loaded = "+referenceStr);
+                                }
+                            });
+
                         }
                     }
                 }
@@ -113,6 +141,7 @@ public class HomepageActivity extends AppCompatActivity  {
         myStats = findViewById(R.id.statsTv);
         sportNameTv = findViewById(R.id.bestSports);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
+        logoutBtn = findViewById(R.id.buttonLogout);
 
         matchesPendingView = findViewById(R.id.pendingMatches);
         listMatchPending = new ArrayList<>();
@@ -147,7 +176,42 @@ public class HomepageActivity extends AppCompatActivity  {
                 }
             });
 
+            /*
+            String profileImg = userLogged.getUid()+"_profileImage.jpg";
+            try {
+                File localFile = File.createTempFile(profileImg, "jpg");
+                FireStorage.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        Log.i(TAG,"Local file created");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.i(TAG,"ERROR Download file");
+                    }
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+             */
+
+
             buildRecyclerView();
+            //LinkAdapterToList();
+            //ManageOnClickMatch();
+
+            logoutBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i(TAG,"Logging out");
+                    auth.signOut();
+                    Intent backToLogin = new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(backToLogin);
+                    finish();
+                }
+            });
         }
 
         createMatchTv.setOnClickListener(new View.OnClickListener() {
@@ -246,9 +310,11 @@ public class HomepageActivity extends AppCompatActivity  {
 
                                 String status = document.getString("status");
                                 if(status.equals("unread")) {
-                                    String localId = document.getString("id_match");
-                                    Log.i(TAG, "DOC ID:"+document.getId() + " => ADDING ID MATCH: " + localId);
-                                    matchesToDisplayDb.add(localId);
+                                    String localIdMatch = document.getString("id_match");
+                                    String notificationID = document.getId();
+                                    Log.i(TAG, "DOC ID:"+notificationID + " => ADDING ID MATCH: " + localIdMatch);
+                                    matchesToDisplayDb.add(localIdMatch);
+                                    linkingNotificationMatches.put(localIdMatch,notificationID);
                                     System.out.println("Size matches:"+ matchesToDisplayDb.size());
 
                                 }
@@ -313,24 +379,30 @@ public class HomepageActivity extends AppCompatActivity  {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                         }
+
                     });
         }
     }
 
-    protected void LinkAdapterToList(){
-        System.out.println("SIZE Pending matches: "+listMatchPending.size());
+    protected void LinkAdapterToList() {
+        Log.i(TAG,"SIZE Pending matches: " + listMatchPending.size());
 
         matchesPendingView.setHasFixedSize(true);
         //listMatchPending.add(new MatchItem("xxx", R.drawable.baseline_sports_basketball_24, "basket", "22", 0, 0, R.drawable.baseline_check_24));
         mAdapter = new MatchesAdapter(listMatchPending);
-        matchesPendingView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        matchesPendingView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         matchesPendingView.setAdapter(mAdapter);
+        ManageOnClickMatch();
+    }
 
+        // disconnect two parts
+
+    protected void ManageOnClickMatch(){
         mAdapter.setOnItemClickLister(new MatchesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 String matchID = listMatchPending.get(position).getMatchID();
-                Log.i(TAG,"Accepting match id"+matchID);
+                Log.i(TAG,"Accepting match adapter"+matchID);
                 Matches.document(matchID)
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -363,7 +435,7 @@ public class HomepageActivity extends AppCompatActivity  {
                                     System.err.println("Map is empty");
                                 }
                                 else{
-                                    ModifyMatchPlayers(playerToUpdate,matchID);
+                                    ModifyMatchPlayers(playerToUpdate,matchID,position);
                                 }
                             }
                         });
@@ -372,20 +444,46 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-    protected void ModifyMatchPlayers(HashMap<String,ArrayList<String>> mapToUpload,String matchID){
+    protected void ModifyMatchPlayers(HashMap<String,ArrayList<String>> mapToUpload,String matchID,int position){
         Matches.document(matchID).update("Players",mapToUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
+                String notificationToRemove = null;
+
                 if (task.isSuccessful()) {
                     Log.i(TAG,"UPDATED Match id"+matchID);
+                     notificationToRemove = linkingNotificationMatches.get(matchID);
                 }
                 else {
                     Log.d(TAG, "get failed with ", task.getException());
                 }
 
+                if(notificationToRemove != null) RemoveNotificationFromDbList(matchID,notificationToRemove,position);
+
             }
         });
+    }
+
+
+    protected void RemoveNotificationFromDbList(String matchID,String notificationToRemove,int position){
+        Notifications.document(notificationToRemove)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Notification"+ notificationToRemove +" successfully deleted!");
+                        linkingNotificationMatches.remove(matchID);
+                        listMatchPending.remove(position);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
 
 
     }
