@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -176,14 +177,19 @@ public class HomepageActivity extends AppCompatActivity  {
                 }
             });
 
-            /*
+
+            String referenceStr = "profileImages/"+userLogged.getUid()+"_profileImage.jpg";
+            StorageReference profileRef = FireStorage.child(referenceStr);
+
             String profileImg = userLogged.getUid()+"_profileImage.jpg";
             try {
                 File localFile = File.createTempFile(profileImg, "jpg");
-                FireStorage.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                profileRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                         Log.i(TAG,"Local file created");
+                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        imageViewProfile.setImageBitmap(bitmap);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -195,7 +201,7 @@ public class HomepageActivity extends AppCompatActivity  {
                 throw new RuntimeException(e);
             }
 
-             */
+
 
 
             buildRecyclerView();
