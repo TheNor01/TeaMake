@@ -35,7 +35,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:inputType="textPersonName"
-            android:text="My Matches"
+            android:text="My Confirmed Matches"
             android:textColor="@color/white"
             android:textSize="30dp"
             app:layout_constraintVertical_bias="0.257" />
