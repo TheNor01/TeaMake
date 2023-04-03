@@ -17,10 +17,15 @@ import java.util.HashMap;
 
 public class MatchesManager {
 
-    private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
+    private static final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
 
-    protected void CheckForAllConfirmedPlayers(){
+    protected static void CheckForAllConfirmedPlayers(){
+
+        Log.i("Mmanager","CheckForAllConfirmedPlayers");
+
+        //https://stackoverflow.com/questions/50118345/firestore-merging-two-queries-locally
+
         FireDb.collection("Matches")
                 .whereEqualTo("Status","Pending")
                 .get()
@@ -36,7 +41,7 @@ public class MatchesManager {
 
                                 //HOW many players?
 
-                                Log.i("Mmanager","Size of players"+players.keySet().size());
+                                Log.i("Mmanager","MatchID"+document.getId()+"Size of players: "+players.keySet().size());
 
                                 int counter=0;
                                 for(String UID: players.keySet()){
@@ -56,9 +61,9 @@ public class MatchesManager {
                 });
     }
 
-    protected void SetReadyMatch(String documentToChange){
+    protected static void SetReadyMatch(String documentToChange){
         FireDb.collection("Matches").document(documentToChange)
-                .update("status", "Confirmed")
+                .update("Status", "Confirmed")
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

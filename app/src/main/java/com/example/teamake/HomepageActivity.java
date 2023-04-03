@@ -444,6 +444,14 @@ public class HomepageActivity extends AppCompatActivity  {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MatchesManager.CheckForAllConfirmedPlayers();
+    }
+
+
+
     private void buildViewMatches() {
         Log.i(TAG,"ON PAUSE");
         ArrayList<String> newMatches = new ArrayList<>();
