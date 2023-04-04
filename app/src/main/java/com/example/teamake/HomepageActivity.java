@@ -68,7 +68,7 @@ public class HomepageActivity extends AppCompatActivity  {
 
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    private  final StorageReference FireStorage = FirebaseStorage.getInstance().getReference();
+    private final StorageReference FireStorage = FirebaseStorage.getInstance().getReference();
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
     private CollectionReference Notifications = FireDb.collection("Notifications");

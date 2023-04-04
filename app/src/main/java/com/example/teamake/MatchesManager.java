@@ -8,54 +8,65 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MatchesManager {
 
     private static final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
+    private static final FirebaseAuth auth = FirebaseAuth.getInstance();
+
+    private static CollectionReference Matches = FireDb.collection("Matches");
 
 
     protected static void CheckForAllConfirmedPlayers(){
 
         Log.i("Mmanager","CheckForAllConfirmedPlayers");
+        Log.i("Mmanager",auth.getCurrentUser().getUid());
 
-        //https://stackoverflow.com/questions/50118345/firestore-merging-two-queries-locally
+        //String queryTerm = "Players."+auth.getCurrentUser().getUid()+".exists";
+        String queryTerm = "Players."+auth.getCurrentUser().getUid();
 
-        FireDb.collection("Matches")
-                .whereEqualTo("Status","Pending")
+        Matches
+                //.whereArrayContains("Players",auth.getCurrentUser().getUid()) //problem
+                .orderBy(queryTerm)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            HashMap<String, ArrayList<String>> players;
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
+                        HashMap<String,ArrayList<String>> players;
 
-                                players = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
+                        if(queryDocumentSnapshots.isEmpty()) Log.i("Mmanager","EMPTY RESULTS");
 
-                                //HOW many players?
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
 
-                                Log.i("Mmanager","MatchID"+document.getId()+"Size of players: "+players.keySet().size());
+                            Log.i("Mmanager Doc",document.getId());
+                            if(document.getString("Status").equals("Confirmed")) continue;
 
-                                int counter=0;
-                                for(String UID: players.keySet()){
-                                    ArrayList<String> props = players.get(UID);
-                                    if(props.get(1).equals("Accepted")){
-                                        counter++;
-                                    }
-                                }
-                                if(counter==players.keySet().size()){
-                                    Log.i("Mmanager","MATCH IS READY TO PLAY");
-                                    SetReadyMatch(document.getId());
+                            players = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
+                            Log.i("Mmanager","MatchID"+document.getId()+"Size of players: "+players.keySet().size());
+
+                            //HOW many players?
+
+                            int counter=0;
+                            for(String UID: players.keySet()){
+                                ArrayList<String> props = players.get(UID);
+                                if(props.get(1).equals("Accepted")){
+                                    counter++;
                                 }
                             }
-
+                            if(counter==players.keySet().size()){
+                                Log.i("Mmanager","MATCH IS READY TO PLAY");
+                                SetReadyMatch(document.getId());
+                            }
                         }
                     }
                 });

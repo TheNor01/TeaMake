@@ -37,7 +37,6 @@ public class MatchesActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RecyclerView.Adapter adapterData;
-    RecyclerView.LayoutManager layoutManager;
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
     private CollectionReference Notifications = FireDb.collection("Notifications");
@@ -59,8 +58,8 @@ public class MatchesActivity extends AppCompatActivity {
 
         // get from db at the time
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
 //        matchesList.add(new MatchItem("1234",R.drawable.baseline_sports_soccer_24,"Soccer","2020-02-01",10,20,R.drawable.baseline_check_24));
 //        matchesList.add(new MatchItem("12345",R.drawable.baseline_sports_tennis_24,"Tennis","2020-02-01",10,20,R.drawable.baseline_check_24));
@@ -68,7 +67,6 @@ public class MatchesActivity extends AppCompatActivity {
 
         adapterData = new MatchesAdapter(matchesList);
 
-        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapterData);
 
         userLogged = mAuth.getCurrentUser();
@@ -85,9 +83,11 @@ public class MatchesActivity extends AppCompatActivity {
 
     protected  void PopulateRecyclerView(){
 
+        String queryTerm = "Players."+mAuth.getCurrentUser().getUid();
+
         Log.i(TAG,"DISPLAYING ALL CONFIRMED MATCHES  FOR: "+userLogged.getUid());
             Matches
-                    .whereArrayContains("Players", userLogged.getUid())
+                    .orderBy(queryTerm)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -95,7 +95,7 @@ public class MatchesActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
 
                                 if(task.getResult().isEmpty()){
-                                    MatchItem MI = new MatchItem("dummy", R.drawable.baseline_sports_basketball_24, "basket", "2023/04/02", -1, -1, R.drawable.baseline_check_24);
+                                    MatchItem MI = new MatchItem("dummy", R.drawable.baseline_sports_basketball_24, "basket", "2023/04/02", -1, -1, R.drawable.baseline_notifications_24);
                                     matchesList.add(MI);
                                 }
                                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -103,23 +103,25 @@ public class MatchesActivity extends AppCompatActivity {
                                     String status = document.getString("Status"); //status match
 
                                     if (status.equals("Confirmed")) {
+
+                                        Log.i(TAG,"FOUND MATCH CONFIRMED: "+document.getId());
                                         MatchItem MI = CreateMatch(document);
                                         //MatchItem MI = new MatchItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
                                         matchesList.add(MI);
+                                        Log.i(TAG,"SIZE CONFIRMED: "+matchesList.size());
                                     }
                                 }
                                 adapterData.notifyDataSetChanged();
+
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                         }
 
                     });
-        }
+    }
 
     protected MatchItem CreateMatch(QueryDocumentSnapshot document){
-
-        Log.i(TAG,"Found matchID: "+document.getId());
 
         String date = document.getString("Date");
         String sport = document.getString("Sport");
@@ -138,7 +140,7 @@ public class MatchesActivity extends AppCompatActivity {
                 imageToUse = R.drawable.baseline_group_add_24;
         }
 
-        return new MatchItem(document.getId(), imageToUse, document.getId(), date, -1, -1, R.drawable.baseline_check_24);
+        return new MatchItem(document.getId(), imageToUse, document.getId(), date, -1, -1, R.drawable.baseline_info_24);
 
     }
 
