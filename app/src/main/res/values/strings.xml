@@ -3,7 +3,10 @@
     <string name="login">LOGIN</string>
     <string name="nickname">Nickname</string>
     <string name="register">Register Now</string>
+    <string name="phone_hint">Phone number</string>
     <string name="soccer">Soccer</string>
     <string name="tennis">Tennis</string>
-    <string name="Basket">Basket</string>
+    <string name="Cittadella_Catania">Cittadella Catania</string>
+    <string name="Benedettini_Catania">Benedettini Catania</string>
+    <string name="Unikore">Unikore</string>
 </resources>

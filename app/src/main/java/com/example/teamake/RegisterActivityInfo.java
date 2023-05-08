@@ -1,8 +1,5 @@
 package com.example.teamake;
 
-import static android.content.ContentValues.TAG;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -11,10 +8,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,25 +26,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class RegisterActivityInfo extends AppCompatActivity {
 
 
-    TextInputEditText edNickname;
+    TextInputEditText edNickname,edName,edSecondName;
     Button storeInfoOnDb;
-    ArrayList<String> sportsChecks;
-    CheckBox cSoccer,cTennis,cBasket;
+    String uniCheck="";
+    RadioGroup radioGroup;
 
     String email,pw;
+    EditText phoneEdit ;
 
     //Singleton mAuth firebase connection
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
     private final String collectionInfoUser = "UserBasicInfo";
     private NumberPicker npAge;
-
     public static final String TAG = "RegisterActivityInfo";
 
     @Override
@@ -55,43 +52,18 @@ public class RegisterActivityInfo extends AppCompatActivity {
         setContentView(R.layout.register_main_scene_info);
 
         edNickname = findViewById(R.id.nicknameEdit);
+        edName = findViewById(R.id.nameEdit);
+        edSecondName = findViewById(R.id.second_nameEdit);
+        phoneEdit = findViewById(R.id.phone);
+
+
         npAge = findViewById(R.id.agePicker);
         npAge.setMinValue(10);
         npAge.setMaxValue(80);
         npAge.setValue(15);
         npAge.setWrapSelectorWheel(true);
 
-
-
-        cSoccer = findViewById(R.id.checkSoccer);
-        cTennis = findViewById(R.id.checkTennis);
-        cBasket = findViewById(R.id.checkBasket);
-        sportsChecks = new ArrayList<>();
-
-
-        cSoccer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(cSoccer.isChecked()) sportsChecks.add("Soccer");
-                else sportsChecks.remove("Soccer");
-            }
-        });
-
-        cTennis.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(cSoccer.isChecked()) sportsChecks.add("Tennis");
-                else sportsChecks.remove("Tennis");
-            }
-        });
-
-        cBasket.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(cSoccer.isChecked()) sportsChecks.add("Basket");
-                else sportsChecks.remove("Basket");
-            }
-        });
+        radioGroup = findViewById(R.id.radioGroupUni);
 
         storeInfoOnDb = findViewById(R.id.signUpButtonInfo);
 
@@ -108,9 +80,15 @@ public class RegisterActivityInfo extends AppCompatActivity {
                 Log.i(TAG,"INFO PW: "+ pw);
                 Log.i(TAG,"INFO AGE: "+ npAge.getValue());
                 Log.i(TAG,"INFO Nickname: "+ edNickname.getText().toString());
+                Log.i(TAG,"INFO Name: "+ edName.getText().toString());
+                Log.i(TAG,"INFO SecondName: "+ edSecondName.getText().toString());
+                Log.i(TAG,"INFO phone: "+ phoneEdit.getText().toString());
+
 
                 if(email.isEmpty() || pw.isEmpty()){
                     Toast.makeText(RegisterActivityInfo.this,"Please, Enter a valid email or password" , Toast.LENGTH_LONG).show();
+                } else if (uniCheck.equals("")) {
+                    Toast.makeText(RegisterActivityInfo.this,"Please, Pick a valid university" , Toast.LENGTH_LONG).show();
                 }else{
                     Log.i(TAG,"Storing Db auth");
                     CreateUserDb(email,pw);
@@ -158,11 +136,15 @@ public class RegisterActivityInfo extends AppCompatActivity {
 
         userInfo.put("Nickname",edNickname.getText().toString());
         userInfo.put("Age",npAge.getValue());
-        userInfo.put("Sports", sportsChecks);
+        userInfo.put("Name",edName.getText().toString());
+        userInfo.put("Second Name",edSecondName.getText().toString());
+        userInfo.put("Phone",phoneEdit.getText().toString());
+        userInfo.put("University", uniCheck);
         FireDb.collection(collectionInfoUser).document(UID).set(userInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -184,4 +166,24 @@ public class RegisterActivityInfo extends AppCompatActivity {
     }
 
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_cittadella:
+                if (checked){
+                    Toast.makeText(this, "Selected"+((RadioButton) view).getText(), Toast.LENGTH_SHORT).show();
+                    uniCheck = (String) ((RadioButton) view).getText();
+                }
+                break;
+            case R.id.radio_unikore:
+                if (checked){
+                    Toast.makeText(this, "Selected"+((RadioButton) view).getText(), Toast.LENGTH_SHORT).show();
+                    uniCheck = (String) ((RadioButton) view).getText();
+                }
+                break;
+        }
+    }
 }

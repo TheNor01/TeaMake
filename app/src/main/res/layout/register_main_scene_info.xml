@@ -41,8 +41,35 @@
                 android:id="@+id/nicknameEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
             />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:padding="15dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:hint="Your Name"
+                android:id="@+id/nameEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:padding="15dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:hint="Your Second Name"
+                android:id="@+id/second_nameEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -62,8 +89,30 @@
             <NumberPicker
                 android:layout_width="264dp"
                 android:id="@+id/agePicker"
+                android:layout_marginLeft="5dp"
                 android:layout_height="85dp">
             </NumberPicker>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Number picker  -->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:gravity="center"
+                android:text="Enter your phone number"></TextView>
+
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="fill_parent"
+                android:layout_height="58dp"
+                android:layout_marginLeft="5dp"
+                android:hint="@string/phone_hint"
+                android:inputType="phone" />
         </LinearLayout>
 
 
@@ -78,27 +127,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Your sports">
+            android:text="Your University">
         </TextView>
 
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkSoccer"
-            android:text="@string/soccer">
-        </CheckBox>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkTennis"
-            android:text="@string/tennis">
-        </CheckBox>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkBasket"
-            android:text="@string/Basket">
-        </CheckBox>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioGroupUni"
+                    android:orientation="vertical">
+
+                    <RadioButton android:id="@+id/radio_cittadella"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/Cittadella_Catania"
+                        android:onClick="onRadioButtonClicked"/>
+
+                    <RadioButton android:id="@+id/radio_unikore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/Unikore"
+                        android:onClick="onRadioButtonClicked"/>
+
+                </RadioGroup>
+            </LinearLayout>
 
         </LinearLayout>
 
