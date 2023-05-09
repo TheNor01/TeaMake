@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="@color/teal_700"
     android:id="@+id/parentRegistration"
-    tools:context=".MatchesActivity">
+    tools:context=".RidesActivity">
 
     <FrameLayout
         android:id="@+id/frameLayout"

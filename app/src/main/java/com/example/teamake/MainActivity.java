@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         edTextMail = findViewById(R.id.emailEdit);
         edTextPw = findViewById(R.id.passwordEdit);
-        pgLoad = findViewById(R.id.progressBar);
         pgLoad.setVisibility(View.INVISIBLE);
 
         loginButton = findViewById(R.id.loginButton);

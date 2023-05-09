@@ -11,57 +11,58 @@
         android:layout_margin="4dp">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/sportTypeMatchImg"
+            android:id="@+id/uniImg"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:padding="2dp"
-            android:src="@drawable/baseline_sports_soccer_24">
+            android:src="@drawable/baseline_school_24">
         </androidx.appcompat.widget.AppCompatImageView>
 
         <TextView
-            android:id="@+id/sportTypeMatchText"
+            android:id="@+id/myUniversity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="51dp"
             android:layout_marginTop="1dp"
-            android:text="Soccer"
+            android:text="University"
             android:textColor="@color/black"
             android:textStyle="bold">
         </TextView>
 
         <TextView
-            android:id="@+id/sportDateMatch"
+            android:id="@+id/rideDate"
             android:layout_width="85dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="50dp"
             android:layout_marginTop="20dp"
-            android:text="Date"></TextView>
-
-        <TextView
-            android:id="@+id/scoreMatch1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="166dp"
-            android:layout_marginTop="17dp"
-            android:text="Score1">
+            android:text="Date">
         </TextView>
 
 
         <TextView
-            android:id="@+id/scoreMatch2"
+            android:id="@+id/rideTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="51dp"
+            android:layout_marginTop="38dp"
+            android:text="Time">
+        </TextView>
+
+        <TextView
+            android:id="@+id/locationInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="266dp"
             android:layout_marginTop="17dp"
-            android:text="Score2">
+            android:text="Info">
         </TextView>
 
         <ImageButton

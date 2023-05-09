@@ -37,12 +37,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
@@ -54,8 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 //Todo
@@ -72,19 +67,19 @@ public class HomepageActivity extends AppCompatActivity  {
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
     private CollectionReference Notifications = FireDb.collection("Notifications");
-    private CollectionReference Matches = FireDb.collection("Matches");
+    private CollectionReference Rides = FireDb.collection("Matches");
 
     FirebaseUser userLogged;
-    TextView profileNameTV,sportNameTv,createMatchTv,myStats;
+    TextView profileNameTV, universityTv, offerRide, lookingForRide, myRides;
 
     Button logoutBtn;
 
     ImageView imageViewProfile;
 
     // NOTIFICATIONS PENDING MATCHES
-    ArrayList<MatchItem> listMatchPending;
-    RecyclerView matchesPendingView;
-    MatchesAdapter mAdapter;
+    ArrayList<RideItem> listInvitePending;
+    RecyclerView invitesRidePending;
+    RidesAdapter iAdapter;
     private static final String TAG = "HomepageActivity";
     private static final Integer MY_PERMISSIONS_REQUEST_READ_MEDIA = 0;
     private final String collectionInfoUser = "UserBasicInfo";
@@ -137,20 +132,21 @@ public class HomepageActivity extends AppCompatActivity  {
 
 
         profileNameTV = findViewById(R.id.profileNameTV);
-        createMatchTv = findViewById(R.id.createMatchTv);
-        myStats = findViewById(R.id.statsTv);
-        sportNameTv = findViewById(R.id.bestSports);
+        lookingForRide = findViewById(R.id.textRideReceiveTv);
+        offerRide = findViewById(R.id.textRideOfferTv);
+        myRides = findViewById(R.id.myRidesTv);
+        universityTv = findViewById(R.id.myUniversity);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
         logoutBtn = findViewById(R.id.buttonLogout);
 
-        matchesPendingView = findViewById(R.id.pendingMatches);
-        listMatchPending = new ArrayList<>();
-        matchesPendingView.setHasFixedSize(true);
-        //listMatchPending.add(new MatchItem("xxx", R.drawable.baseline_sports_basketball_24, "basket", "22", 0, 0, R.drawable.baseline_check_24));
-        matchesPendingView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        invitesRidePending = findViewById(R.id.pendingInvites);
+        listInvitePending = new ArrayList<>();
+        invitesRidePending.setHasFixedSize(true);
+        //listMatchPending.add(new RideItem("xxx", R.drawable.baseline_sports_basketball_24, "basket", "22", 0, 0, R.drawable.baseline_check_24));
+        invitesRidePending.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        mAdapter = new MatchesAdapter(listMatchPending);
-        matchesPendingView.setAdapter(mAdapter);
+        iAdapter = new RidesAdapter(listInvitePending);
+        invitesRidePending.setAdapter(iAdapter);
 
         permissionCheckRead = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
@@ -167,13 +163,12 @@ public class HomepageActivity extends AppCompatActivity  {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         String nickname = task.getResult().get("Nickname").toString();
-                        List<String> sports = (List<String>) task.getResult().get("Sports");
+                        String university = task.getResult().get("University").toString();
 
-                        String sportsAsString =  sports.stream().map(n -> String.valueOf(n)).collect(Collectors.joining(","));
 
                         Log.i(TAG,"LOGGED USER NICK:"+nickname);
                         profileNameTV.setText(nickname);
-                        sportNameTv.setText(sportsAsString);
+                        universityTv.setText(university);
 
                         //Add sync task -- login sergio -- but it shows Kamado
                     } else {
@@ -223,19 +218,19 @@ public class HomepageActivity extends AppCompatActivity  {
             });
         }
 
-        createMatchTv.setOnClickListener(new View.OnClickListener() {
+        offerRide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentCreateMatch= new Intent(getApplicationContext(),CreateMatchActivity.class);
-                startActivity(intentCreateMatch);
+                Intent intentCreateRide= new Intent(getApplicationContext(), CreateRideActivity.class);
+                startActivity(intentCreateRide);
             }
         });
 
-        myStats.setOnClickListener(new View.OnClickListener() {
+        myRides.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentViewMatch= new Intent(getApplicationContext(),MatchesActivity.class);
-                startActivity(intentViewMatch);
+                Intent intentViewRide= new Intent(getApplicationContext(), RidesActivity.class);
+                startActivity(intentViewRide);
             }
         });
 
@@ -339,13 +334,13 @@ public class HomepageActivity extends AppCompatActivity  {
 
     }
 
-    protected  void PopulateRecyclerView(ArrayList<String> matchesToDisplayDb){
+    protected  void PopulateRecyclerView(ArrayList<String> invitesRide){
 
-        Log.i(TAG,"DISPLAYING ALL PENDING MATCHES  FOR: "+userLogged.getUid());
-        Log.i(TAG, String.valueOf(matchesToDisplayDb.size()));
-        if(!matchesToDisplayDb.isEmpty()) {
-            Matches
-                    .whereIn(FieldPath.documentId(), matchesToDisplayDb)
+        Log.i(TAG,"DISPLAYING ALL PENDING REQUEST RIDE  FOR: "+userLogged.getUid());
+        Log.i(TAG, String.valueOf(invitesRide.size()));
+        if(!invitesRide.isEmpty()) {
+            Rides
+                    .whereIn(FieldPath.documentId(), invitesRide)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -360,14 +355,14 @@ public class HomepageActivity extends AppCompatActivity  {
 
                                     if (players.containsKey(userLogged.getUid())) isPlayerInvited = true;
                                     if (status.equals("Pending") && isPlayerInvited) {
-                                        MatchItem MI= CreateMatch(document);
-                                        //MatchItem MI = new MatchItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
-                                        listMatchPending.add(MI);
+                                        RideItem MI= CreateMatch(document);
+                                        //RideItem MI = new RideItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
+                                        listInvitePending.add(MI);
 
                                     }
                                 }
                                 //LinkAdapterToList();
-                                mAdapter.notifyDataSetChanged();
+                                iAdapter.notifyDataSetChanged();
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
@@ -379,12 +374,12 @@ public class HomepageActivity extends AppCompatActivity  {
 
 
     protected void ManageOnClickMatch(){
-        mAdapter.setOnItemClickLister(new MatchesAdapter.OnItemClickListener() {
+        iAdapter.setOnItemClickLister(new RidesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                String matchID = listMatchPending.get(position).getMatchID();
+                String matchID = listInvitePending.get(position).getRideID();
                 Log.i(TAG,"Accepting match adapter"+matchID);
-                Matches.document(matchID)
+                Rides.document(matchID)
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -497,7 +492,7 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
     protected void ModifyMatchPlayers(HashMap<String,ArrayList<String>> mapToUpload,String matchID,int position){
-        Matches.document(matchID).update("Players",mapToUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
+        Rides.document(matchID).update("Players",mapToUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
@@ -518,7 +513,7 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-    protected MatchItem CreateMatch(QueryDocumentSnapshot document){
+    protected RideItem CreateMatch(QueryDocumentSnapshot document){
 
         Log.i(TAG,"Found matchID: "+document.getId());
 
@@ -539,7 +534,7 @@ public class HomepageActivity extends AppCompatActivity  {
                 imageToUse = R.drawable.baseline_group_add_24;
         }
 
-        return new MatchItem(document.getId(), imageToUse, document.getId(), date, -1, -1, R.drawable.baseline_check_24);
+        return new RideItem(document.getId(), imageToUse, document.getId(), date, "", "", R.drawable.baseline_check_24);
 
     }
 
@@ -552,8 +547,8 @@ public class HomepageActivity extends AppCompatActivity  {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Notification"+ notificationToRemove +" successfully deleted!");
                         linkingNotificationMatches.remove(matchID);
-                        listMatchPending.remove(position);
-                        mAdapter.notifyItemChanged(position);
+                        listInvitePending.remove(position);
+                        iAdapter.notifyItemChanged(position);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

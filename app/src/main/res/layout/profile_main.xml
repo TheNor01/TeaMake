@@ -95,7 +95,7 @@
             android:textSize="12dp" />
 
         <TextView
-            android:id="@+id/bestSports"
+            android:id="@+id/myUniversity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -118,35 +118,46 @@
         app:layout_constraintVertical_bias="0.342">
 
         <TextView
-            android:id="@+id/statsTv"
+            android:id="@+id/myRidesTv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="#94DA43"
             android:textSize="20dp"
             android:gravity="center"
-            android:text="My Stats"
+            android:text="My Rides"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/createMatchTv"
+            android:id="@+id/textRideReceiveTv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="#94DA43"
             android:textSize="20dp"
             android:gravity="center"
-            android:text="Create a match"
+            android:text="Looking for a ride?"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textRideOfferTv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#94DA43"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:text="Offer a ride"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Your pending matches"
+            android:text="Your pending Invites"
             android:layout_height="wrap_content">
         </TextView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pendingMatches"
+            android:id="@+id/pendingInvites"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

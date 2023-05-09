@@ -3,7 +3,6 @@ package com.example.teamake;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,7 +58,7 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersV
     @NonNull
     @Override
     public PlayersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_entry_player,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_entry_offer,parent,false);
         PlayersViewHolder mvh = new PlayersViewHolder(v,customListener);
         return  mvh;
 

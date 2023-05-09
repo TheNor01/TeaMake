@@ -23,12 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,7 +34,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateMatchActivity extends AppCompatActivity {
+public class CreateRideActivity extends AppCompatActivity {
 
     ArrayList<PlayerItem> teamList1= new ArrayList<>();
     ArrayList<PlayerItem> teamList2= new ArrayList<>();
@@ -84,7 +80,7 @@ public class CreateMatchActivity extends AppCompatActivity {
                             boolean isAlreadyPresent = teamList1.stream().anyMatch(o -> UID.equals(o.getUID()));
                             boolean isAlreadyPresent2 = teamList2.stream().anyMatch(o -> UID.equals(o.getUID()));
 
-                            if(isAlreadyPresent || isAlreadyPresent2) Toast.makeText(CreateMatchActivity.this, "User already invited", Toast.LENGTH_SHORT).show();
+                            if(isAlreadyPresent || isAlreadyPresent2) Toast.makeText(CreateRideActivity.this, "User already invited", Toast.LENGTH_SHORT).show();
 
                             else {
                                 if (team == 1) {
@@ -135,7 +131,7 @@ public class CreateMatchActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 String value = adapterView.getItemAtPosition(pos).toString();
-                Toast.makeText(CreateMatchActivity.this, "SELECTED:"+value, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateRideActivity.this, "SELECTED:"+value, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -168,7 +164,7 @@ public class CreateMatchActivity extends AppCompatActivity {
                 Integer currentValue = Integer.parseInt(countPlayers.getText().toString());
                 currentValue--;
                 if(currentValue<1) {
-                    Toast.makeText(CreateMatchActivity.this, "You cannot decrease anymore number of players", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateRideActivity.this, "You cannot decrease anymore number of players", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 countPlayers.setText(String.valueOf(currentValue));
@@ -188,7 +184,7 @@ public class CreateMatchActivity extends AppCompatActivity {
                 int month = cal.get(Calendar.MONTH);
                 int day = cal.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog dialog = new DatePickerDialog(CreateMatchActivity.this,
+                DatePickerDialog dialog = new DatePickerDialog(CreateRideActivity.this,
                         android.R.style.Theme_DeviceDefault_Dialog_MinWidth,dateListener, year,month,day);
                 dialog.show();
             }
@@ -215,12 +211,12 @@ public class CreateMatchActivity extends AppCompatActivity {
 
 
                 if(choosedSport.isEmpty()){
-                    Toast.makeText(CreateMatchActivity.this, "Choose a sport", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateRideActivity.this, "Choose a sport", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(choosedDate.isEmpty() || !choosedDate.matches(".*\\d.*")){
-                    Toast.makeText(CreateMatchActivity.this, "Choose a valid date", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateRideActivity.this, "Choose a valid date", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -246,7 +242,7 @@ public class CreateMatchActivity extends AppCompatActivity {
                 for(PlayerItem pi : teamList1){
                     if(pi.getUID().equals("Dummy")){
                         Log.i("CreateMatch","TEAM1"+pi.getUID());
-                        Toast.makeText(CreateMatchActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateRideActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     else team1UIDs.add(pi.getUID());
@@ -255,7 +251,7 @@ public class CreateMatchActivity extends AppCompatActivity {
                 for(PlayerItem pi : teamList2){
                     if(pi.getUID().equals("Dummy")){
                         Log.i("CreateMatch","TEAM2"+pi.getUID());
-                        Toast.makeText(CreateMatchActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateRideActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     else team2UIDs.add(pi.getUID());
