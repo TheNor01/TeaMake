@@ -1,6 +1,6 @@
 package com.example.teamake;
 
-public class PlayerItem {
+public class UserItem {
 
     private int inviteImg;
     private String nicknameText;
@@ -8,7 +8,7 @@ public class PlayerItem {
     private String UID;
 
 
-    public PlayerItem(int invImg, String nicknameText,String UID){
+    public UserItem(int invImg, String nicknameText, String UID){
         this.inviteImg = invImg;
         this.nicknameText = nicknameText;
         this.UID = UID;

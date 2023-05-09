@@ -28,8 +28,8 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesViewHol
 
     public  static class RidesViewHolder extends RecyclerView.ViewHolder {
         ImageView uniImage;
-        TextView universityName,rideDate,rideTime,locationCoord;
-        ImageButton inviteImCheck;
+        TextView universityName,rideDate,rideTime;
+        ImageButton inviteImCheck,locationCoord;
 
         public RidesViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
@@ -78,7 +78,7 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesViewHol
         holder.universityName.setText(currentMatch.getUniversityText());
         holder.rideDate.setText(currentMatch.getDateRide());
         holder.rideTime.setText(String.valueOf(currentMatch.getTimeRide()));
-        holder.locationCoord.setText(String.valueOf(currentMatch.getLocationStarting()));
+        holder.locationCoord.setImageResource(currentMatch.getInviteCheck());
         holder.inviteImCheck.setImageResource(currentMatch.getInviteCheck());
         //holder.inviteImCheck.setVisibility(View.GONE);
 

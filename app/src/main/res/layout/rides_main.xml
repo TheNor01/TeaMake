@@ -44,7 +44,7 @@
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/matchesPlayed"
+        android:id="@+id/ridesConfirmed"
         android:layout_width="391dp"
         android:layout_height="214dp"
         android:scrollbars="vertical"

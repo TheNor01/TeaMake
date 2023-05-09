@@ -515,26 +515,12 @@ public class HomepageActivity extends AppCompatActivity  {
 
     protected RideItem CreateMatch(QueryDocumentSnapshot document){
 
-        Log.i(TAG,"Found matchID: "+document.getId());
+        Log.i(TAG,"Found rideID: "+document.getId());
 
         String date = document.getString("Date");
-        String sport = document.getString("Sport");
-        int imageToUse;
-        switch (sport) {
-            case "Tennis":
-                imageToUse = R.drawable.baseline_sports_tennis_24;
-                break;
-            case "Soccer":
-                imageToUse = R.drawable.baseline_sports_soccer_24;
-                break;
-            case "Basket":
-                imageToUse = R.drawable.baseline_sports_basketball_24;
-                break;
-            default:
-                imageToUse = R.drawable.baseline_group_add_24;
-        }
+        String University = document.getString("UniversityDestination");
 
-        return new RideItem(document.getId(), imageToUse, document.getId(), date, "", "", R.drawable.baseline_check_24);
+        return new RideItem(document.getId(), R.drawable.baseline_school_24, University, date, "", R.drawable.baseline_info_24, R.drawable.baseline_check_24);
 
     }
 

@@ -2,7 +2,6 @@ package com.example.teamake;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -17,7 +16,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -25,14 +23,13 @@ import java.util.ArrayList;
 public class PlayersListActivity extends AppCompatActivity {
 
 
-    TextView inviteView,nicknameView;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private CollectionReference playersRef = db.collection("UserBasicInfo");
-    PlayersAdapter playersAdapter;
+    DriversAdapter playersAdapter;
     RecyclerView playersViewList;
-    ArrayList<PlayerItem> playersArrayList;
+    ArrayList<UserItem> playersArrayList;
 
 
 
@@ -46,8 +43,8 @@ public class PlayersListActivity extends AppCompatActivity {
         playersViewList.setHasFixedSize(true);
         playersViewList.setLayoutManager(new LinearLayoutManager(this));
 
-        playersArrayList = new ArrayList<PlayerItem>();
-        playersAdapter = new PlayersAdapter(playersArrayList);
+        playersArrayList = new ArrayList<UserItem>();
+        playersAdapter = new DriversAdapter(playersArrayList);
         playersViewList.setAdapter(playersAdapter);
 
 
@@ -76,7 +73,7 @@ public class PlayersListActivity extends AppCompatActivity {
                         String nickname = doc.getString("Nickname");
                         String UID = doc.getId();
 
-                        PlayerItem PI = new PlayerItem(R.drawable.baseline_person_24,nickname,UID);
+                        UserItem PI = new UserItem(R.drawable.baseline_person_24,nickname,UID);
                         Log.i("PlayerList Activity","ADDED:"+PI.getUID());
 
 
@@ -98,11 +95,11 @@ public class PlayersListActivity extends AppCompatActivity {
         playersViewList.setHasFixedSize(true);
 
 
-        playersAdapter = new PlayersAdapter(playersArrayList);
+        playersAdapter = new DriversAdapter(playersArrayList);
         playersViewList.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         playersViewList.setAdapter(playersAdapter);
 
-        playersAdapter.setOnItemClickLister(new PlayersAdapter.OnItemClickListener() {
+        playersAdapter.setOnItemClickLister(new DriversAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 playersArrayList.get(position).setImageToPlayersPending();

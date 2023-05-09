@@ -7,30 +7,32 @@
     android:orientation="vertical"
     android:background="@color/teal_700"
     android:id="@+id/parentRegistration"
-    tools:context=".RidesActivity">
+    tools:context=".CreateRideActivity">
+
 
     <TextView
-        android:id="@+id/textSportChooser"
+        android:id="@+id/textUniversityChooser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="88dp"
-        android:text="Select the sport you wanna play"
+        android:text="Offer a ride to.."
         android:textColor="@color/white"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></TextView>
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
 
     <Spinner
-        android:id="@+id/spinnerSport"
+        android:id="@+id/spinnerUniversity"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:contentDescription="Your sport"
+        android:layout_marginTop="4dp"
         android:background="@android:drawable/btn_dropdown"
+        android:contentDescription="Your sport"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textSportChooser" />
+        app:layout_constraintTop_toBottomOf="@+id/textUniversityChooser" />
 
     <TextView
         android:id="@+id/textView3"
@@ -38,15 +40,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:text="How many players?"
+        android:text="How many seats?"
         android:textColor="@color/white"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerSport">
+        app:layout_constraintTop_toBottomOf="@+id/spinnerUniversity">
     </TextView>
 
     <Button
-        android:id="@+id/addPlayerBtn"
+        android:id="@+id/addSeatBtn"
         android:layout_width="82dp"
         android:layout_height="64dp"
         android:layout_alignParentStart="true"
@@ -63,7 +65,7 @@
 
 
     <Button
-        android:id="@+id/removePlayerBtn"
+        android:id="@+id/removeSeatBtn"
         android:layout_width="80dp"
         android:layout_height="65dp"
         android:layout_alignParentStart="true"
@@ -89,42 +91,9 @@
         android:textColor="@color/white"
         android:textSize="20dp"
         app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerSport">
+        app:layout_constraintTop_toBottomOf="@+id/spinnerUniversity">
     </TextView>
 
-    <LinearLayout
-        android:layout_width="366dp"
-        android:layout_height="168dp"
-        android:orientation="horizontal"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="36sp"
-        android:layout_marginEnd="16dp"
-        android:id="@+id/layoutManager"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.355"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addPlayerBtn"
-        app:layout_constraintVertical_bias="0.0">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listPlayer1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scrollbars="vertical" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:scrollbars="vertical"
-            android:id="@+id/listPlayer2"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-    </LinearLayout>
 
     <TextView
         android:id="@+id/tvDate"
@@ -132,44 +101,76 @@
         android:layout_height="37dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="68dp"
-        android:gravity="center"
         android:background="@color/grayLight"
-        android:hint="Select it"
+        android:gravity="center"
+        android:hint="Pick Date"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.439"
         app:layout_constraintStart_toEndOf="@+id/tvIntroDate"
-        app:layout_constraintTop_toBottomOf="@+id/layoutManager"
-        app:layout_constraintVertical_bias="0.295" />
+        app:layout_constraintTop_toBottomOf="@+id/addSeatBtn"
+        app:layout_constraintVertical_bias="0.168" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="83dp"
+        android:layout_height="37dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="68dp"
+        android:background="@color/grayLight"
+        android:gravity="center"
+        android:hint="Choose time"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.443"
+        app:layout_constraintStart_toEndOf="@+id/tvIntroDate"
+        app:layout_constraintTop_toBottomOf="@+id/tvDate"
+        app:layout_constraintVertical_bias="0.088" />
 
     <TextView
         android:id="@+id/tvIntroDate"
-        android:layout_width="181dp"
-        android:layout_height="37dp"
+        android:layout_width="200dp"
+        android:layout_height="103dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="68dp"
         android:gravity="center"
-        android:text="Choose event date"
+        android:text="Choose ride \ndate and time"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.023"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutManager"
-        app:layout_constraintVertical_bias="0.302" />
+        app:layout_constraintTop_toBottomOf="@+id/removeSeatBtn"
+        app:layout_constraintVertical_bias="0.166" />
+
 
     <Button
-        android:id="@+id/createMatchButton"
+        android:id="@+id/chooseLocation"
         android:layout_width="332dp"
         android:layout_height="50dp"
-        android:text="Create Match"
+        android:text="Offer the ride"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDate"
-        app:layout_constraintVertical_bias="0.313" />
+        app:layout_constraintVertical_bias="0.42" />
+
+    <Button
+        android:id="@+id/createRideButton"
+        android:layout_width="332dp"
+        android:layout_height="50dp"
+        android:text="Offer the ride"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chooseLocation" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

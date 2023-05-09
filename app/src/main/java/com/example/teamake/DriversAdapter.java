@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersViewHolder>{
+public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersViewHolder>{
 
-    private ArrayList<PlayerItem> playerList;
+    private ArrayList<UserItem> driverList;
 
     private OnItemClickListener customListener;
 
@@ -26,7 +26,7 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersV
     }
 
     public static class PlayersViewHolder extends RecyclerView.ViewHolder {
-        ImageView playerImageInvite;
+        ImageView imageInvite;
         TextView nickname;
 
 
@@ -34,8 +34,8 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersV
 
         public PlayersViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
-            playerImageInvite = itemView.findViewById(R.id.sportTypeMatchImg);
-            nickname = itemView.findViewById(R.id.nicknamePlayer);
+            imageInvite = itemView.findViewById(R.id.inviteImg);
+            nickname = itemView.findViewById(R.id.nicknameUser);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -51,8 +51,8 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersV
         }
     }
 
-    public PlayersAdapter(ArrayList<PlayerItem> localPlayerList){
-        playerList = localPlayerList;
+    public DriversAdapter(ArrayList<UserItem> localPlayerList){
+        driverList = localPlayerList;
     }
 
     @NonNull
@@ -64,14 +64,14 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersV
 
     }
 
-    public void onBindViewHolder(@NonNull PlayersAdapter.PlayersViewHolder holder, int position) {
-        PlayerItem currentPlayer = playerList.get(position);
+    public void onBindViewHolder(@NonNull DriversAdapter.PlayersViewHolder holder, int position) {
+        UserItem currentPlayer = driverList.get(position);
 
-        holder.playerImageInvite .setImageResource(currentPlayer.getInviteImg());
+        holder.imageInvite.setImageResource(currentPlayer.getInviteImg());
         holder.nickname.setText(currentPlayer.getNicknameText());
     }
     @Override
     public int getItemCount() {
-        return playerList.size();
+        return driverList.size();
     }
 }
