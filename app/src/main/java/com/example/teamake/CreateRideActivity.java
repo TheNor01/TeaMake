@@ -43,6 +43,7 @@ public class CreateRideActivity extends AppCompatActivity {
     TextView countSeats,datePicker,timePickerView;
 
     int hour,minute;
+    String dateRide;
 
     Map<String, Object> matchMap = new HashMap<>();
     ArrayList<String> invitedUsersUID;
@@ -146,28 +147,22 @@ public class CreateRideActivity extends AppCompatActivity {
 
 
         // TIME SECTION //
+        timePickerView.setOnClickListener(view -> {
+            TimePickerDialog timePickerDialog = new TimePickerDialog(CreateRideActivity.this,
+                    new TimePickerDialog.OnTimeSetListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hourSel, int minutesSel) {
+                        hour = hourSel;
+                        minute = minutesSel;
 
+                        timePickerView.setText(hour+":"+minute);
 
-        timePickerView.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View view) {
+                    }
+                },24,0,true);
 
-              TimePickerDialog timePickerDialog = new TimePickerDialog(CreateRideActivity.this,
-                      new TimePickerDialog.OnTimeSetListener() {
-                      @SuppressLint("SetTextI18n")
-                      @Override
-                      public void onTimeSet(TimePicker timePicker, int hourSel, int minutesSel) {
-                          hour = hourSel;
-                          minute = minutesSel;
-
-                          timePickerView.setText(hour+":"+minute);
-
-                      }
-                  },24,0,true);
-
-              timePickerDialog.updateTime(hour,minute);
-              timePickerDialog.show();
-          }
+            timePickerDialog.updateTime(hour,minute);
+            timePickerDialog.show();
         });
 
 
