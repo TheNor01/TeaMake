@@ -3,7 +3,6 @@ package com.example.teamake;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,33 +19,30 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class PlayersListActivity extends AppCompatActivity {
 
 
+public class DriverListActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     private CollectionReference playersRef = db.collection("UserBasicInfo");
-    DriversAdapter playersAdapter;
-    RecyclerView playersViewList;
-    ArrayList<UserItem> playersArrayList;
-
+    DriversAdapter driversAdapter;
+    RecyclerView driversViewList;
+    ArrayList<UserItem> driversArrayList;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.players_list);
+        setContentView(R.layout.drivers_list);
 
 
-        playersViewList = findViewById(R.id.listPlayers);
-        playersViewList.setHasFixedSize(true);
-        playersViewList.setLayoutManager(new LinearLayoutManager(this));
+        driversViewList = findViewById(R.id.listPlayers);
+        driversViewList.setHasFixedSize(true);
+        driversViewList.setLayoutManager(new LinearLayoutManager(this));
 
-        playersArrayList = new ArrayList<UserItem>();
-        playersAdapter = new DriversAdapter(playersArrayList);
-        playersViewList.setAdapter(playersAdapter);
-
+        driversArrayList = new ArrayList<>();
+        driversAdapter = new DriversAdapter(driversArrayList);
+        driversViewList.setAdapter(driversAdapter);
 
         EventChangeListener();
 
@@ -55,6 +51,8 @@ public class PlayersListActivity extends AppCompatActivity {
 
 
     private void EventChangeListener(){
+
+        //filter university
 
         playersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -72,12 +70,12 @@ public class PlayersListActivity extends AppCompatActivity {
 
                         String nickname = doc.getString("Nickname");
                         String UID = doc.getId();
+                        int freeSeats = Integer.parseInt(doc.getString("FreeSeats"));
 
-                        UserItem PI = new UserItem(R.drawable.baseline_person_24,nickname,UID);
-                        Log.i("PlayerList Activity","ADDED:"+PI.getUID());
+                        UserItem PI = new UserItem(R.drawable.baseline_person_24,nickname,UID,freeSeats);
+                        Log.i("DriverList Activity","ADDED:"+PI.getUID());
 
-
-                        playersArrayList.add(PI);
+                        driversArrayList.add(PI);
                     }
 
                 }
@@ -90,42 +88,38 @@ public class PlayersListActivity extends AppCompatActivity {
     }
 
     public void buildRecyclerView() {
-        playersViewList = findViewById(R.id.listPlayers);
+        driversViewList = findViewById(R.id.listPlayers);
 
-        playersViewList.setHasFixedSize(true);
+        driversViewList.setHasFixedSize(true);
 
 
-        playersAdapter = new DriversAdapter(playersArrayList);
-        playersViewList.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        playersViewList.setAdapter(playersAdapter);
+        driversAdapter = new DriversAdapter(driversArrayList);
+        driversViewList.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        driversViewList.setAdapter(driversAdapter);
 
-        playersAdapter.setOnItemClickLister(new DriversAdapter.OnItemClickListener() {
+        driversAdapter.setOnItemClickLister(new DriversAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                playersArrayList.get(position).setImageToPlayersPending();
-                playersAdapter.notifyItemChanged(position);
+                driversArrayList.get(position).setImageToPlayersPending();
+                driversAdapter.notifyItemChanged(position);
 
-                String localUid = playersArrayList.get(position).getUID();
-                String localNickname = playersArrayList.get(position).getNicknameText();
+                String localUid = driversArrayList.get(position).getUID();
+                String localNickname = driversArrayList.get(position).getNicknameText();
 
-                Log.i("PlayersList","Inviting... ="+localUid);
+                Log.i("DriverList","Inviting... ="+localUid);
 
 
                 Bundle extras = getIntent().getExtras();
 
                 String localPosition = extras.get("position").toString();
                 String localTeam = extras.get("team").toString();
-                Log.i("PlayersList",  "calling intent position: "+localPosition);
-
-
-               // System.out.println(positionListView);
+                Log.i("DriverList",  "calling intent position: "+localPosition);
 
 
 
                 Intent intent = new Intent();
                 intent.putExtra("UID", localUid);
                 intent.putExtra("position",localPosition);
-                intent.putExtra("team",localTeam);
                 intent.putExtra("nickname",localNickname);
                 setResult(444, intent);
                 finish();

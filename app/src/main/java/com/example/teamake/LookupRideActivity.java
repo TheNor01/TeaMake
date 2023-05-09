@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,18 +36,15 @@ import java.util.Map;
 public class LookupRideActivity extends AppCompatActivity {
 
     ArrayList<UserItem> teamList1= new ArrayList<>();
-    ArrayList<UserItem> teamList2= new ArrayList<>();
 
-    private RecyclerView mRecyclerViewList1,mRecyclerViewList2;
-    private DriversAdapter mAdapter1,mAdapter2;
+    private RecyclerView mRecyclerViewList1;
+    private DriversAdapter mAdapter1;
 
-    String[] sports = {"Tennis","Basket","Soccer"};
-    Spinner spinnerSport;
-    Button addPlayerBtn,removePlayerBtn,createMatchButton;
-    TextView countPlayers,datePicker;
+    Button sendRequestRide,lookingForRiders;
+    TextView datePicker,timePickerView;
 
     Map<String, Object> matchMap = new HashMap<>();
-    ArrayList<String> team1UIDs,team2UIDs;
+    ArrayList<String> driversUIDs;
 
     private DatePickerDialog.OnDateSetListener dateListener;
 
@@ -72,28 +68,20 @@ public class LookupRideActivity extends AppCompatActivity {
                             UID = data.getStringExtra("UID");
                             nickname = data.getStringExtra("nickname");
                             position = Integer.parseInt(data.getStringExtra("position"));
-                            team = Integer.parseInt(data.getStringExtra("team"));
 
 
                             Log.i("CreateMatch -- results:",UID+" - at "+position+" TEAM "+team);
 
                             boolean isAlreadyPresent = teamList1.stream().anyMatch(o -> UID.equals(o.getUID()));
-                            boolean isAlreadyPresent2 = teamList2.stream().anyMatch(o -> UID.equals(o.getUID()));
 
-                            if(isAlreadyPresent || isAlreadyPresent2) Toast.makeText(LookupRideActivity.this, "User already invited", Toast.LENGTH_SHORT).show();
+                            if(isAlreadyPresent ) Toast.makeText(LookupRideActivity.this, "User already invited", Toast.LENGTH_SHORT).show();
 
                             else {
-                                if (team == 1) {
-                                    teamList1.get(position).setNicknameToLooking(nickname);
-                                    teamList1.get(position).setUID(UID);
-                                    teamList1.get(position).setImageToPlayersPending();
-                                    mAdapter1.notifyItemChanged(position);
-                                } else {
-                                    teamList2.get(position).setNicknameToLooking(nickname);
-                                    teamList2.get(position).setUID(UID);
-                                    teamList2.get(position).setImageToPlayersPending();
-                                    mAdapter2.notifyItemChanged(position);
-                                }
+                            teamList1.get(position).setNicknameToLooking(nickname);
+                            teamList1.get(position).setUID(UID);
+                            teamList1.get(position).setImageToPlayersPending();
+                            mAdapter1.notifyItemChanged(position);
+
                             }
                         }
                     }
@@ -109,9 +97,6 @@ public class LookupRideActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_raid_main);
 
-        spinnerSport= findViewById(R.id.spinnerSport);
-        addPlayerBtn= findViewById(R.id.addPlayerBtn);
-        removePlayerBtn= findViewById(R.id.removePlayerBtn);
         countPlayers = findViewById(R.id.playersCount);
         datePicker = findViewById(R.id.tvDate);
         createMatchButton = findViewById(R.id.createMatchButton);
@@ -136,41 +121,6 @@ public class LookupRideActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        addPlayerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Integer currentValue = Integer.parseInt(countPlayers.getText().toString());
-                currentValue++;
-                countPlayers.setText(String.valueOf(currentValue));
-
-                int position = Integer.parseInt(countPlayers.getText().toString());
-
-                int scaledPosition = position-1;
-                Log.i("CreateMatch","Sizeof list: " + mAdapter1.getItemCount());
-                insertItem(scaledPosition);
-                Log.i("CreateMatch","Sizeof list: " + mAdapter1.getItemCount());
-
-            }
-        });
-
-        removePlayerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Integer currentValue = Integer.parseInt(countPlayers.getText().toString());
-                currentValue--;
-                if(currentValue<1) {
-                    Toast.makeText(LookupRideActivity.this, "You cannot decrease anymore number of players", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                countPlayers.setText(String.valueOf(currentValue));
-
-                int position = Integer.parseInt(countPlayers.getText().toString());
-                removeItem(position);
 
             }
         });
@@ -233,7 +183,7 @@ public class LookupRideActivity extends AppCompatActivity {
                 matchMap.put("Sport", choosedSport);
                 matchMap.put("Status", "Pending");
 
-                team1UIDs = new ArrayList<>();
+                driversUIDs = new ArrayList<>();
                 team2UIDs = new ArrayList<>();
 
 
@@ -245,7 +195,7 @@ public class LookupRideActivity extends AppCompatActivity {
                         Toast.makeText(LookupRideActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    else team1UIDs.add(pi.getUID());
+                    else driversUIDs.add(pi.getUID());
                 }
 
                 for(UserItem pi : teamList2){
@@ -261,8 +211,8 @@ public class LookupRideActivity extends AppCompatActivity {
 
                 //Build map UID : notAcceptedMatch
 
-                for(int i = 0; i<team1UIDs.size(); i++) {
-                    Players.put(team1UIDs.get(i),new ArrayList<>(Arrays.asList("team1", "notAcceptedMatch")));
+                for(int i = 0; i< driversUIDs.size(); i++) {
+                    Players.put(driversUIDs.get(i),new ArrayList<>(Arrays.asList("team1", "notAcceptedMatch")));
                     Players.put(team2UIDs.get(i),new ArrayList<>(Arrays.asList("team2", "notAcceptedMatch")));
                 }
 
@@ -292,28 +242,14 @@ public class LookupRideActivity extends AppCompatActivity {
 
     public void insertItem(int position) {
         teamList1.add(position, new UserItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
-        teamList2.add(position, new UserItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
         mAdapter1.notifyItemInserted(position);
-        mAdapter2.notifyItemInserted(position);
     }
 
-    public void removeItem(int position) {
-        teamList1.remove(position);
-        teamList2.remove(position);
-        mAdapter1.notifyItemRemoved(position);
-        mAdapter2.notifyItemRemoved(position);
-    }
 
     public void buildRecyclerView() {
         mRecyclerViewList1 = findViewById(R.id.listPlayer1);
-        mRecyclerViewList2 = findViewById(R.id.listPlayer2);
-
         mRecyclerViewList1.setHasFixedSize(true);
-        mRecyclerViewList2.setHasFixedSize(true);
-
-
         mAdapter1 = new DriversAdapter(teamList1);
-        mAdapter2 = new DriversAdapter(teamList2);
 
 
         mAdapter1.setOnItemClickLister(new DriversAdapter.OnItemClickListener() {
@@ -323,45 +259,26 @@ public class LookupRideActivity extends AppCompatActivity {
                 mAdapter1.notifyItemChanged(position);
 
 
-                Intent invitePlayers = new Intent(getApplicationContext(),PlayersListActivity.class);
+                Intent invitePlayers = new Intent(getApplicationContext(), DriverListActivity.class);
                 invitePlayers.putExtra("position",position);
                 invitePlayers.putExtra("team",1);
-                //startActivity(invitePlayers);
                 activityResultLauncher.launch(invitePlayers);
 
-            }
-        });
-
-        mAdapter2.setOnItemClickLister(new DriversAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                teamList2.get(position).setNicknameToLooking("Looking for..");
-                mAdapter2.notifyItemChanged(position);
-
-                Intent invitePlayers = new Intent(getApplicationContext(),PlayersListActivity.class);
-                invitePlayers.putExtra("position",position);
-                invitePlayers.putExtra("team",2);
-                //startActivity(invitePlayers);
-                activityResultLauncher.launch(invitePlayers);
             }
         });
 
 
         mRecyclerViewList1.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        mRecyclerViewList2.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
 
         mRecyclerViewList1.setAdapter(mAdapter1);
-        mRecyclerViewList2.setAdapter(mAdapter2);
 
         teamList1.add(new UserItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
-        teamList2.add(new UserItem(R.drawable.baseline_group_add_24,"Player","Dummy"));
     }
 
 
     protected void sendPlayerNotification(String id_match){
         ArrayList<String> allUID = new ArrayList<String>();
-        allUID.addAll(team1UIDs);
-        allUID.addAll(team2UIDs);
+        allUID.addAll(driversUIDs);
 
         for(String uid: allUID) {
             HashMap<String, String> localMap = new HashMap<>();

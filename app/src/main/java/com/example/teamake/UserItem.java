@@ -7,11 +7,14 @@ public class UserItem {
 
     private String UID;
 
+    private int FreeSeats;
 
-    public UserItem(int invImg, String nicknameText, String UID){
+
+    public UserItem(int invImg, String nicknameText, String UID,int FreeSeats){
         this.inviteImg = invImg;
         this.nicknameText = nicknameText;
         this.UID = UID;
+        this.FreeSeats = FreeSeats;
     }
 
     public int getInviteImg() {
@@ -21,7 +24,6 @@ public class UserItem {
         return UID;
     }
 
-
     public void setNicknameToLooking(String text){
         nicknameText = text;
     }
@@ -30,6 +32,9 @@ public class UserItem {
         UID = text;
     }
 
+    public int getFreeSeats() {
+        return FreeSeats;
+    }
 
     public void setImageToPlayersPending(){
         this.inviteImg=R.drawable.baseline_how_to_reg_24;

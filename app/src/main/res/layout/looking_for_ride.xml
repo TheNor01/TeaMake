@@ -46,10 +46,12 @@
         android:text="@string/Unikore"
         android:textColor="@color/white"
         android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/layoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.528"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
         android:id="@+id/layoutManager"
@@ -58,7 +60,6 @@
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.355"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
@@ -67,27 +68,25 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="15dp"
             android:scrollbars="vertical" />
 
     </LinearLayout>
+
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="83dp"
         android:layout_height="37dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="68dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="64dp"
         android:background="@color/grayLight"
         android:gravity="center"
         android:hint="Select it"
         android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.965"
         app:layout_constraintStart_toEndOf="@+id/tvIntroDate"
-        app:layout_constraintTop_toBottomOf="@+id/layoutManager"
-        app:layout_constraintVertical_bias="0.183" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutManager" />
 
     <TextView
         android:id="@+id/tvIntroDate"
@@ -101,54 +100,62 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.009"
+        app:layout_constraintHorizontal_bias="0.042"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutManager"
-        app:layout_constraintVertical_bias="0.183" />
+        app:layout_constraintVertical_bias="0.192" />
 
     <TextView
         android:id="@+id/tvIntroTime"
         android:layout_width="181dp"
         android:layout_height="37dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:gravity="center"
         android:text="Choose ride time"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.078"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvIntroDate" />
 
+
     <TextView
-        android:id="@+id/tvDate2"
+        android:id="@+id/tvTime"
         android:layout_width="83dp"
         android:layout_height="37dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="68dp"
+        android:layout_marginTop="12dp"
         android:background="@color/grayLight"
         android:gravity="center"
         android:hint="Pick time"
         android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toEndOf="@+id/tvIntroDate"
-        app:layout_constraintTop_toBottomOf="@+id/tvDate"
-        app:layout_constraintVertical_bias="0.08" />
+        app:layout_constraintHorizontal_bias="0.467"
+        app:layout_constraintStart_toEndOf="@+id/tvIntroTime"
+        app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+
+    <Button
+        android:id="@+id/filterDateTimeRides"
+        android:layout_width="161dp"
+        android:layout_height="57dp"
+        android:text="Looking For Rides"
+        android:textSize="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/sendRequestButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvIntroTime"
+        app:layout_constraintVertical_bias="0.645" />
 
     <Button
         android:id="@+id/sendRequestButton"
         android:layout_width="332dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="104dp"
-        android:text="Create Match"
+        android:layout_marginBottom="56dp"
+        android:text="Confirm request"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.316"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvIntroTime"
-        app:layout_constraintVertical_bias="0.978" />
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -217,6 +217,7 @@ public class CreateRideActivity extends AppCompatActivity {
                 matchMap.put("Date", choosedDate);
                 matchMap.put("Time", choosedTime);
                 matchMap.put("University", choosedUniversity);
+                matchMap.put("FreeSeats", countSeatsValue);
                 matchMap.put("Driver",userLogged.getUid() );
                 matchMap.put("Status", "Pending");
                 matchMap.put("Passengers", Passengers );
