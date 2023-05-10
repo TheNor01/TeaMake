@@ -152,7 +152,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Your pending Invites"
+            android:text="Your pending notifications"
             android:layout_height="wrap_content">
         </TextView>
 

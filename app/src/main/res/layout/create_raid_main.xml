@@ -151,7 +151,7 @@
         android:id="@+id/chooseLocation"
         android:layout_width="332dp"
         android:layout_height="50dp"
-        android:text="Offer the ride"
+        android:text="Choose location from map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.493"

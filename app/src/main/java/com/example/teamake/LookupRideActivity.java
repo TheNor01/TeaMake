@@ -42,7 +42,7 @@ public class LookupRideActivity extends AppCompatActivity {
     private RecyclerView mRecyclerViewList1;
     private DriversAdapter mAdapter1;
 
-    Button sendRequestRide,lookingForRiders;
+    Button sendRequestRide;
     TextView datePicker,timePickerView,choosedUniversity;
 
     int hour,minute;
@@ -96,7 +96,6 @@ public class LookupRideActivity extends AppCompatActivity {
 
         datePicker = findViewById(R.id.tvDate);
         timePickerView = findViewById(R.id.tvTime);
-        lookingForRiders = findViewById(R.id.filterDateTimeRides);
         sendRequestRide = findViewById(R.id.sendRequestButton);
         choosedUniversity = findViewById(R.id.textViewUniversity);
 
@@ -131,6 +130,7 @@ public class LookupRideActivity extends AppCompatActivity {
                             hour = hourSel;
                             minute = minutesSel;
 
+                            Log.d("LookupRide", hour + ":"+minute);
                             timePickerView.setText(hour+":"+minute);
 
                         }
@@ -140,24 +140,6 @@ public class LookupRideActivity extends AppCompatActivity {
             timePickerDialog.show();
         });
 
-
-        lookingForRiders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                /*
-                Log.i("LookupRide", "LookupRide .. INFO:");
-                Log.i("LookupRide", "Uni choosed = " + choosedUniversity);
-                Log.i("LookupRide", "Date choosed = " + choosedDate);
-                Log.i("LookupRide", "Time choosed = " + choosedTime);
-
-                 */
-
-            }
-        });
-
-
         //send driver notification about new request
         sendRequestRide.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,23 +148,22 @@ public class LookupRideActivity extends AppCompatActivity {
                 driversUIDs = new ArrayList<>();
                 for(UserItem pi : driverListToSend){
                     if(pi.getUID().equals("Dummy")){
-                        Log.i("LookupRide","TEAM1"+pi.getUID());
-                        Toast.makeText(LookupRideActivity.this, "Select all players", Toast.LENGTH_SHORT).show();
+                        Log.i("LookupRide","Rider: "+pi.getUID());
+                        Toast.makeText(LookupRideActivity.this, "Select at least one ride", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     else driversUIDs.add(pi.getUID());
                 }
-                
 
-                HashMap<String,ArrayList<String>> Players = new HashMap<>();
+                HashMap<String,String> Riders = new HashMap<>();
 
                 //Build map UID : notAcceptedMatch
 
                 for(int i = 0; i< driversUIDs.size(); i++) {
-                    Players.put(driversUIDs.get(i),new ArrayList<>(Arrays.asList("team1", "notAcceptedMatch")));
+                    Riders.put(driversUIDs.get(i), "notAcceptedRide");
                 }
 
-                matchMap.put("Players",Players);
+                matchMap.put("Riders",Riders);
 
                 FireDb.collection("Matches").add(matchMap)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -219,16 +200,17 @@ public class LookupRideActivity extends AppCompatActivity {
         mAdapter1.setOnItemClickLister(new DriversAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                driverListToSend.get(position).setNicknameToLooking("Looking for..");
-                mAdapter1.notifyItemChanged(position);
 
                 String choosedDate = datePicker.getText().toString();
                 String choosedTime = timePickerView.getText().toString();
 
                 if(choosedDate.isEmpty() || !choosedDate.matches(".*\\d.*") || choosedTime.isEmpty() || !choosedTime.matches(".*\\d.*") ){
-                    Toast.makeText(LookupRideActivity.this, "Choose a valid date and time", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LookupRideActivity.this, "Choose a valid date and time.", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                driverListToSend.get(position).setNicknameToLooking("Looking for..");
+                mAdapter1.notifyItemChanged(position);
 
                 Intent inviteDrivers = new Intent(getApplicationContext(), DriverListActivity.class);
                 inviteDrivers.putExtra("position",position);
@@ -250,7 +232,6 @@ public class LookupRideActivity extends AppCompatActivity {
             HashMap<String, String> localMap = new HashMap<>();
             localMap.put("id_ride", id_match);
             localMap.put("UID", uid);
-            localMap.put("status", "unread");
             localMap.put("status", "unread");
 
             FireDb.collection("Notifications").add(localMap)

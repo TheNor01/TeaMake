@@ -1,11 +1,13 @@
 package com.example.teamake;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,6 +82,21 @@ public class DriverListActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
+                if(task.getResult().isEmpty()){
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DriverListActivity.this);
+
+                    builder.setMessage("No driver or ride avaiable")
+                            .setTitle("WARNING");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                           finish();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
 
@@ -127,7 +144,6 @@ public class DriverListActivity extends AppCompatActivity {
                 Bundle extras = getIntent().getExtras();
 
                 String localPosition = extras.get("position").toString();
-                String localTeam = extras.get("team").toString();
                 Log.i("DriverList",  "calling intent position: "+localPosition);
 
 

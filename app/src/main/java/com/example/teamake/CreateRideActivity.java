@@ -105,6 +105,12 @@ public class CreateRideActivity extends AppCompatActivity {
 
                 Integer currentValue = Integer.parseInt(countSeats.getText().toString());
                 currentValue++;
+                if(currentValue>4) {
+                    Toast.makeText(CreateRideActivity.this, "You cannot decrease anymore number of seats ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.i("CreateRide","Seats:"+currentValue);
                 countSeats.setText(String.valueOf(currentValue));
 
             }

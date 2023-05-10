@@ -28,8 +28,8 @@ public class MatchesManager {
 
     protected static void CheckForAllConfirmedPlayers(){
 
-        Log.i("Mmanager","CheckForAllConfirmedPlayers");
-        Log.i("Mmanager",auth.getCurrentUser().getUid());
+        Log.i("Rmanager","CheckForAllConfirmedRides");
+        Log.i("Rmanager",auth.getCurrentUser().getUid());
 
         //String queryTerm = "Players."+auth.getCurrentUser().getUid()+".exists";
         String queryTerm = "Players."+auth.getCurrentUser().getUid();
@@ -44,15 +44,15 @@ public class MatchesManager {
 
                         HashMap<String,ArrayList<String>> players;
 
-                        if(queryDocumentSnapshots.isEmpty()) Log.i("Mmanager","EMPTY RESULTS");
+                        if(queryDocumentSnapshots.isEmpty()) Log.i("Rmanager","EMPTY RESULTS");
 
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
 
-                            Log.i("Mmanager Doc",document.getId());
+                            Log.i("Rmanager Doc",document.getId());
                             if(document.getString("Status").equals("Confirmed")) continue;
 
                             players = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
-                            Log.i("Mmanager","MatchID"+document.getId()+"Size of players: "+players.keySet().size());
+                            Log.i("Rmanager","MatchID"+document.getId()+"Size of players: "+players.keySet().size());
 
                             //HOW many players?
 
@@ -64,7 +64,7 @@ public class MatchesManager {
                                 }
                             }
                             if(counter==players.keySet().size()){
-                                Log.i("Mmanager","MATCH IS READY TO PLAY");
+                                Log.i("Rmanager","MATCH IS READY TO PLAY");
                                 SetReadyMatch(document.getId());
                             }
                         }
@@ -78,13 +78,13 @@ public class MatchesManager {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("Mmanager", "DocumentSnapshot successfully updated!");
+                        Log.d("Rmanager", "DocumentSnapshot successfully updated!");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w("Mmanager", "Error updating document", e);
+                        Log.w("Rmanager", "Error updating document", e);
                     }
                 });
     }

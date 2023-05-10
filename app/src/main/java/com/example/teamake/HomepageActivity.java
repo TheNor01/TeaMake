@@ -234,6 +234,14 @@ public class HomepageActivity extends AppCompatActivity  {
             }
         });
 
+        lookingForRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentViewRide= new Intent(getApplicationContext(), LookupRideActivity.class);
+                startActivity(intentViewRide);
+            }
+        });
+
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -477,7 +485,7 @@ public class HomepageActivity extends AppCompatActivity  {
                             }
 
                         }
-                        Log.d(TAG, "new matches: " + newMatches);
+                        Log.d(TAG, "new notifications: " + newMatches);
                         Log.i(TAG, String.valueOf(newMatches.size()));
                         if(!newMatches.isEmpty()) {
                             Log.i(TAG, "calling populate v2 for : " + userLogged.getUid());
