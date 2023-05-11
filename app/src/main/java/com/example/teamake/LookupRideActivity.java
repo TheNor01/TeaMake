@@ -62,6 +62,7 @@ public class LookupRideActivity extends AppCompatActivity {
 
                     Log.i("LookupRide -- Activity result CODE", String.valueOf(result.getResultCode()));
 
+                    //Driver lookup
                     if(result.getResultCode() == 444) {
                         String UID,nickname;
                         Integer position;

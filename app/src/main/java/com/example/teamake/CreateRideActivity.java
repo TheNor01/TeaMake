@@ -15,17 +15,24 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.type.LatLng;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -39,11 +46,13 @@ public class CreateRideActivity extends AppCompatActivity {
 
     String[] universities = {"Cittadella Catania","Benedettini Catania","Unikore"};
     Spinner spinnerUni;
-    Button addPlayerBtn,removePlayerBtn,createMatchButton;
+    Button addPlayerBtn,removePlayerBtn,createMatchButton,chooseLocation;
     TextView countSeats,datePicker,timePickerView;
 
     int hour,minute;
     String dateRide;
+
+    double LAT,LNG;
 
     Map<String, Object> matchMap = new HashMap<>();
     ArrayList<String> invitedUsersUID;
@@ -53,8 +62,38 @@ public class CreateRideActivity extends AppCompatActivity {
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser userLogged;
-    
-    
+
+    ActivityResultLauncher<Intent> activityResultLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),  new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+
+                            Log.i("CreateRideActivity -- Activity result CODE", String.valueOf(result.getResultCode()));
+
+                            //Driver lookup
+                            if(result.getResultCode() == 555) {
+                                Intent data = result.getData();
+                                if(data != null) {
+                                    System.out.println(data);
+                                    double latitude = data.getDoubleExtra("Lat",0.00);
+                                    double longitude = data.getDoubleExtra("Lng",0.00);
+                                    Log.i("LookupRide -- marker lat:",latitude +" - lng: "+longitude);
+
+                                    if(latitude!=0.00 && longitude != 0.00){
+                                        LAT = latitude;
+                                        LNG = longitude;
+
+                                        chooseLocation.setText(new DecimalFormat("#.####").format(LAT) +";"+ new DecimalFormat("#.####").format(LNG));
+                                    }
+
+                                }
+                            }
+                        }
+                    });
+
+
+
 
 
     @Override
@@ -79,6 +118,7 @@ public class CreateRideActivity extends AppCompatActivity {
         datePicker = findViewById(R.id.tvDate);
         timePickerView = findViewById(R.id.tvTime);
         createMatchButton = findViewById(R.id.createRideButton);
+        chooseLocation = findViewById(R.id.chooseLocation);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, universities);
 
@@ -169,6 +209,20 @@ public class CreateRideActivity extends AppCompatActivity {
 
             timePickerDialog.updateTime(hour,minute);
             timePickerDialog.show();
+        });
+
+
+        chooseLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //Intent chooseMarkerLocation =  new Intent(getApplicationContext(), MapsActivity.class);
+                //startActivity(chooseMarkerLocation);
+
+
+                Intent chooseMarkerLocation = new Intent(getApplicationContext(), MapsActivity.class);
+                activityResultLauncher.launch(chooseMarkerLocation);
+            }
         });
 
 
