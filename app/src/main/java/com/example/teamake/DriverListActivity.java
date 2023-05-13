@@ -115,6 +115,7 @@ public class DriverListActivity extends AppCompatActivity {
                         tmpInfo.add("Dummy");
                         tmpInfo.add(rideDriver);
                         tmpInfo.add(String.valueOf(freeSeats));
+                        tmpInfo.add(rideId);
                         mapDrivers.put(rideDriver,tmpInfo);
                         Log.i("DriverList Activity","ADDED DRIVER to map: "+rideDriver);
 
@@ -127,7 +128,7 @@ public class DriverListActivity extends AppCompatActivity {
                 }
 
                 Query getNickname = playersRef
-                        .whereIn(FieldPath.documentId(),new ArrayList<String>(mapDrivers.keySet()));
+                        .whereIn(FieldPath.documentId(),new ArrayList<>(mapDrivers.keySet()));
 
                 getNickname.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -173,11 +174,18 @@ public class DriverListActivity extends AppCompatActivity {
                 driversArrayList.get(position).setImageToPlayersPending();
                 driversAdapter.notifyItemChanged(position);
 
+                //ride id position
+
+
                 String localUid = driversArrayList.get(position).getUID();
                 String localNickname = driversArrayList.get(position).getNicknameText();
                 int seats = driversArrayList.get(position).getFreeSeats();
 
-                Log.i("DriverList","Inviting... ="+localUid + "with Nickname:"+localNickname+ " - seats:"+seats) ;
+                System.out.println(position);
+                String rideId = mapDrivers.get(localUid).get(3);
+                System.out.println(rideId);
+
+                Log.i("DriverList","Inviting... ="+localUid + "with Nickname:"+localNickname+ " - seats:"+seats + "- Offers:"+rideId) ;
 
                 Bundle extras = getIntent().getExtras();
 
@@ -189,6 +197,7 @@ public class DriverListActivity extends AppCompatActivity {
                 intent.putExtra("position",localPosition);
                 intent.putExtra("nickname",localNickname);
                 intent.putExtra("seats",seats);
+                intent.putExtra("ride",rideId);
                 setResult(444, intent);
                 finish();
             }

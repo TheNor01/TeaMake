@@ -22,10 +22,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +60,10 @@ public class LookupRideActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateListener;
 
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser userLogged;
+
+    String rideToConfirm  = "";
 
     ActivityResultLauncher<Intent> activityResultLauncher =
             registerForActivityResult(
@@ -64,7 +75,7 @@ public class LookupRideActivity extends AppCompatActivity {
 
                     //Driver lookup
                     if(result.getResultCode() == 444) {
-                        String UID,nickname;
+                        String UID,nickname,rideId;
                         Integer position;
                         int seats;
                         Intent data = result.getData();
@@ -72,15 +83,18 @@ public class LookupRideActivity extends AppCompatActivity {
                             System.out.println(data);
                             UID = data.getStringExtra("UID");
                             nickname = data.getStringExtra("nickname");
+                            rideId = data.getStringExtra("ride");
                             seats = data.getIntExtra("seats",-1);
                             position = Integer.parseInt(data.getStringExtra("position"));
                             
-                            Log.i("LookupRide -- results:",UID+" - at "+position+ "Free seats:"+ seats);
+                            Log.i("LookupRide -- results:",UID+" - at "+position+ " - Free seats:"+ seats + " - rideId: "+rideId);
 
                             driverListToSend.get(position).setNicknameToLooking(nickname);
                             driverListToSend.get(position).setUID(UID);
                             driverListToSend.get(position).setImageToPlayersPending();
                             driverListToSend.get(position).setSeats(seats);
+                            rideToConfirm = rideId;
+
                             mAdapter1.notifyItemChanged(position);
                         }
                     }
@@ -93,10 +107,20 @@ public class LookupRideActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.looking_for_ride);
 
+        userLogged = auth.getCurrentUser();
+
+        if(userLogged == null) {
+            Intent backToLogin = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(backToLogin);
+            finish();
+        }
+
         datePicker = findViewById(R.id.tvDate);
         timePickerView = findViewById(R.id.tvTime);
         sendRequestRide = findViewById(R.id.sendRequestButton);
         choosedUniversity = findViewById(R.id.textViewUniversity);
+
+        populateUniversity();
 
 
         buildRecyclerView();
@@ -154,38 +178,58 @@ public class LookupRideActivity extends AppCompatActivity {
                     else driversUIDs.add(pi.getUID());
                 }
 
-                HashMap<String,String> Riders = new HashMap<>();
+                modifyPassengersRide(rideToConfirm);
+                sendPlayerNotification(rideToConfirm);
 
-                //Build map UID : notAcceptedMatch
-
-                for(int i = 0; i< driversUIDs.size(); i++) {
-                    Riders.put(driversUIDs.get(i), "notAcceptedRide");
-                }
-
-                matchMap.put("Riders",Riders);
-
-                FireDb.collection("Matches").add(matchMap)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d("LookupRide", "DocumentSnapshot MATCH written with ID: " + documentReference.getId());
-
-                                sendPlayerNotification(documentReference.getId());
-                                finish();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("LookupRide", "Error adding document", e);
-                            }
-                        });
             }
         });
 
     }
 
-    
+    private void modifyPassengersRide(String rideToConfirm) {
+
+        Map<String, String> passengers = new HashMap<>();
+        passengers.put(userLogged.getUid(), "notAcceptedRide");
+
+        FireDb.collection("Matches")
+                .document(rideToConfirm)
+                .update("Passengers."+userLogged.getUid(),"notAcceptedRide")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if(task.isSuccessful()){
+                            Log.i("LookupRide", "ADDED passengers to list");
+                        }
+                    }
+                });
+    }
+
+    private void populateUniversity() {
+
+        FireDb.collection("UserBasicInfo")
+                .whereEqualTo(FieldPath.documentId(),userLogged.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String uniLogged = document.getString("University");
+                                choosedUniversity.setText(uniLogged);
+                                Log.i("Lookup", "university:"+ uniLogged, task.getException());
+                            }
+                        }
+                        else {
+                            Log.d("Lookup", "get university failed ", task.getException());
+                        }
+
+                    }
+                });
+
+    }
+
+
     public void buildRecyclerView() {
         mRecyclerViewList1 = findViewById(R.id.listPlayer1);
         mRecyclerViewList1.setHasFixedSize(true);
@@ -232,6 +276,7 @@ public class LookupRideActivity extends AppCompatActivity {
             localMap.put("id_ride", id_match);
             localMap.put("UID", uid);
             localMap.put("status", "unread");
+            localMap.put("passenger", userLogged.getUid());
 
             FireDb.collection("Notifications").add(localMap)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -249,7 +294,6 @@ public class LookupRideActivity extends AppCompatActivity {
                     });
         }
 
-
-
+        finish();
     }
 }

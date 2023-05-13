@@ -78,7 +78,7 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesViewHol
         holder.universityName.setText(currentMatch.getUniversityText());
         holder.rideDate.setText(currentMatch.getDateRide());
         holder.rideTime.setText(String.valueOf(currentMatch.getTimeRide()));
-        holder.locationCoord.setImageResource(currentMatch.getInviteCheck());
+        holder.locationCoord.setImageResource(currentMatch.getInfoLocation());
         holder.inviteImCheck.setImageResource(currentMatch.getInviteCheck());
         //holder.inviteImCheck.setVisibility(View.GONE);
 

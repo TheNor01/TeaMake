@@ -270,9 +270,12 @@ public class CreateRideActivity extends AppCompatActivity {
 
                 //Build map UID : notAcceptedMatch
 
+                /*
                 for (int i = 0; i < invitedUsersUID.size(); i++) {
                     Passengers .put("NULL", "notAcceptedRide");
                 }
+
+                 */
 
                 rideMap.put("Date", choosedDate);
                 rideMap.put("Time", choosedTime);
@@ -280,7 +283,7 @@ public class CreateRideActivity extends AppCompatActivity {
                 rideMap.put("Seats", countSeatsValue);
                 rideMap.put("Driver",userLogged.getUid() );
                 rideMap.put("Status", "Pending");
-                rideMap.put("Passengers", Passengers);
+                //rideMap.put("Passengers", Passengers);
 
                 GeoPoint geoLocation = new GeoPoint(LAT,LNG);
                 rideMap.put("geoMarker", geoLocation );

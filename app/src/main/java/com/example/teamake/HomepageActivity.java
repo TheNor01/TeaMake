@@ -86,7 +86,7 @@ public class HomepageActivity extends AppCompatActivity  {
 
     private int permissionCheckRead = 0 ;
 
-    HashMap<String,String> linkingNotificationMatches = new HashMap<>();
+    HashMap<String,String> linkingNotificationRides = new HashMap<>();
 
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -303,44 +303,7 @@ public class HomepageActivity extends AppCompatActivity  {
         }
     }
 
-    public void buildRecyclerView() {
-
-        String loggedUserUID = userLogged.getUid();
-        Log.i(TAG,"GETTING ALL NOTIFICATION MATCHES FOR: "+loggedUserUID);
-
-
-        ArrayList<String> matchesToDisplayDb = new ArrayList<>();
-
-        Notifications
-                .whereEqualTo("UID", loggedUserUID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                String status = document.getString("status");
-                                if(status.equals("unread")) {
-                                    String localIdMatch = document.getString("id_match");
-                                    String notificationID = document.getId();
-                                    Log.i(TAG, "DOC ID:"+notificationID + " => ADDING ID MATCH: " + localIdMatch);
-                                    matchesToDisplayDb.add(localIdMatch);
-
-                                    //match-notify
-                                    linkingNotificationMatches.put(localIdMatch,notificationID);
-                                    System.out.println("Size matches:"+ matchesToDisplayDb.size());
-
-                                }
-                            }
-                            PopulateRecyclerView(matchesToDisplayDb);
-                        } else {
-                            Log.i(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-    }
+    
 
     protected  void PopulateRecyclerView(ArrayList<String> invitesRide){
 
@@ -357,15 +320,15 @@ public class HomepageActivity extends AppCompatActivity  {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                     String status = document.getString("Status");
-                                    HashMap<String,ArrayList<String>> players;
-                                    players = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
+                                    HashMap<String,ArrayList<String>> passengers;
+                                    passengers = ((HashMap<String,ArrayList<String>> ) document.get("Passengers"));
                                     boolean isPlayerInvited = false;
 
-                                    if (players.containsKey(userLogged.getUid())) isPlayerInvited = true;
+                                    if (passengers.containsKey(userLogged.getUid())) isPlayerInvited = true;
                                     if (status.equals("Pending") && isPlayerInvited) {
-                                        RideItem MI= CreateMatch(document);
-                                        //RideItem MI = new RideItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
-                                        listInvitePending.add(MI);
+                                        RideItem RI =  CreateRideEntry(document);
+                                        //RideItem RI = new RideItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
+                                        listInvitePending.add(RI);
 
                                     }
                                 }
@@ -386,7 +349,7 @@ public class HomepageActivity extends AppCompatActivity  {
             @Override
             public void onItemClick(int position) {
                 String matchID = listInvitePending.get(position).getRideID();
-                Log.i(TAG,"Accepting match adapter"+matchID);
+                Log.i(TAG,"Accepting ride adapter"+matchID);
                 Rides.document(matchID)
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -398,9 +361,8 @@ public class HomepageActivity extends AppCompatActivity  {
                                     if (document.exists()) {
                                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                                        playerToUpdate = ((HashMap<String,ArrayList<String>> ) document.get("Players"));
+                                        playerToUpdate = ((HashMap<String,ArrayList<String>> ) document.get("Passengers"));
                                         if(playerToUpdate.containsKey(userLogged.getUid())){
-
                                             ModifyStatusPlayer(playerToUpdate);
                                         }
 
@@ -454,10 +416,9 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-
     private void buildViewMatches() {
-        Log.i(TAG,"ON PAUSE");
-        ArrayList<String> newMatches = new ArrayList<>();
+        Log.i(TAG,"ON RESUME");
+        ArrayList<String> newRides = new ArrayList<>();
         Notifications
                 .whereEqualTo("UID", userLogged.getUid())
                 .get()
@@ -471,25 +432,24 @@ public class HomepageActivity extends AppCompatActivity  {
                                 String localUID = document.getString("UID");
                                 String localStatus = document.getString("status");
                                 String localNotification = document.getId();
-                                String localMatch = document.getString("id_match");
+                                String localRide = document.getString("id_ride");
 
                                 if(!localUID.equals(userLogged.getUid()) && !localStatus.equals("unread")) continue;
 
-                                if(!linkingNotificationMatches.containsKey(localMatch)) {
-                                    Log.i(TAG,"ADDING NEW Match"+localMatch);
-                                    Log.i(TAG,"ADDING NEW Notification"+document.getString("id_match"));
+                                if(!linkingNotificationRides.containsKey(localRide)) {
+                                    Log.i(TAG,"ADDING NEW Ride: "+localRide);
+                                    Log.i(TAG,"ADDING NEW Notification: "+localNotification);
 
-                                    linkingNotificationMatches.put(localMatch,localNotification);
-                                    newMatches.add(document.getString("id_match"));
+                                    linkingNotificationRides.put(localRide,localNotification);
+                                    newRides.add(document.getString("id_ride"));
                                 }
                             }
-
                         }
-                        Log.d(TAG, "new notifications: " + newMatches);
-                        Log.i(TAG, String.valueOf(newMatches.size()));
-                        if(!newMatches.isEmpty()) {
+                        Log.d(TAG, "new rides: " + newRides);
+                        Log.i(TAG, String.valueOf(newRides.size()));
+                        if(!newRides.isEmpty()) {
                             Log.i(TAG, "calling populate v2 for : " + userLogged.getUid());
-                            PopulateRecyclerView(newMatches);
+                            PopulateRecyclerView(newRides);
                         }
                         else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -507,8 +467,8 @@ public class HomepageActivity extends AppCompatActivity  {
                 String notificationToRemove = null;
 
                 if (task.isSuccessful()) {
-                    Log.i(TAG,"UPDATED Match id"+matchID);
-                    notificationToRemove = linkingNotificationMatches.get(matchID);
+                    Log.i(TAG,"UPDATED ride id"+matchID);
+                    notificationToRemove = linkingNotificationRides.get(matchID);
                 }
                 else {
                     Log.d(TAG, "get failed with ", task.getException());
@@ -521,14 +481,15 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-    protected RideItem CreateMatch(QueryDocumentSnapshot document){
+    protected RideItem CreateRideEntry(QueryDocumentSnapshot document){
 
         Log.i(TAG,"Found rideID: "+document.getId());
 
         String date = document.getString("Date");
-        String University = document.getString("UniversityDestination");
+        String time = document.getString("Time");
+        String University = document.getString("University");
 
-        return new RideItem(document.getId(), R.drawable.baseline_school_24, University, date, "", R.drawable.baseline_info_24, R.drawable.baseline_check_24);
+        return new RideItem(document.getId(), R.drawable.baseline_school_24, University, date, time, R.drawable.baseline_info_24, R.drawable.baseline_check_24);
 
     }
 
@@ -540,7 +501,7 @@ public class HomepageActivity extends AppCompatActivity  {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Notification"+ notificationToRemove +" successfully deleted!");
-                        linkingNotificationMatches.remove(matchID);
+                        linkingNotificationRides.remove(matchID);
                         listInvitePending.remove(position);
                         iAdapter.notifyItemChanged(position);
                     }
