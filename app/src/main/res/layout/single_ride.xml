@@ -54,16 +54,19 @@
             android:text="Time">
         </TextView>
 
-        <ImageButton
+        <TextView
             android:id="@+id/locationInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="273dp"
-            android:layout_marginTop="4dp"
-            android:src="@drawable/baseline_info_24">
-        </ImageButton>
+            android:layout_marginStart="160dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/baseline_info_24"
+            android:text="USER"
+            android:textSize="10dp">
+
+        </TextView>
 
         <ImageButton
             android:id="@+id/inviteImCheck"

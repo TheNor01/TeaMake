@@ -84,7 +84,7 @@ public class RidesActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
 
                                 if(task.getResult().isEmpty()){
-                                    RideItem MI = new RideItem("dummy", R.drawable.baseline_school_24, "dummy", "2023/04/02", "00:00", R.drawable.baseline_info_24, R.drawable.baseline_notifications_24);
+                                    RideItem MI = new RideItem("dummy", R.drawable.baseline_school_24, "dummy", "2023/04/02", "00:00",userLogged.getUid(), R.drawable.baseline_notifications_24);
                                     ridesList.add(MI);
                                 }
                                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -117,7 +117,7 @@ public class RidesActivity extends AppCompatActivity {
         String destinationUniversity = document.getString("University");
         int locationInfo = Integer.parseInt(document.getString("MarkerStartingLocation"));
 
-        return new RideItem(document.getId(), R.drawable.baseline_school_24, destinationUniversity, date, time, R.drawable.baseline_info_24, R.drawable.baseline_info_24);
+        return new RideItem(document.getId(), R.drawable.baseline_school_24, destinationUniversity, date, time,userLogged.getUid(), R.drawable.baseline_info_24);
 
     }
 

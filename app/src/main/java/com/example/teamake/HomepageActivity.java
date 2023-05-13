@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 //Todo
@@ -320,15 +321,22 @@ public class HomepageActivity extends AppCompatActivity  {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                     String status = document.getString("Status");
-                                    HashMap<String,ArrayList<String>> passengers;
-                                    passengers = ((HashMap<String,ArrayList<String>> ) document.get("Passengers"));
+                                    HashMap<String,ArrayList<String>> passengers = ((HashMap<String,ArrayList<String>> ) document.get("Passengers"));
                                     boolean isPlayerInvited = false;
 
-                                    if (passengers.containsKey(userLogged.getUid())) isPlayerInvited = true;
+                                    List<String> passengersKeys = new ArrayList<>(passengers.keySet());
+
+                                    if (passengersKeys.contains(userLogged.getUid())) isPlayerInvited = true;
                                     if (status.equals("Pending") && isPlayerInvited) {
-                                        RideItem RI =  CreateRideEntry(document);
-                                        //RideItem RI = new RideItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
-                                        listInvitePending.add(RI);
+
+                                        for(String localPass : passengersKeys){
+                                            if(!localPass.equals("NULL")) {
+                                                RideItem RI = CreateRideEntry(document, localPass);
+                                                //RideItem RI = new RideItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
+                                                listInvitePending.add(RI);
+                                            }
+                                        }
+
 
                                     }
                                 }
@@ -412,7 +420,7 @@ public class HomepageActivity extends AppCompatActivity  {
     @Override
     protected void onPause() {
         super.onPause();
-        MatchesManager.CheckForAllConfirmedPlayers();
+        RidesManager.CheckForAllConfirmedPassengers();
     }
 
 
@@ -481,7 +489,7 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-    protected RideItem CreateRideEntry(QueryDocumentSnapshot document){
+    protected RideItem CreateRideEntry(QueryDocumentSnapshot document,String pass){
 
         Log.i(TAG,"Found rideID: "+document.getId());
 
@@ -489,7 +497,7 @@ public class HomepageActivity extends AppCompatActivity  {
         String time = document.getString("Time");
         String University = document.getString("University");
 
-        return new RideItem(document.getId(), R.drawable.baseline_school_24, University, date, time, R.drawable.baseline_info_24, R.drawable.baseline_check_24);
+        return new RideItem(document.getId(), R.drawable.baseline_school_24, University, date, time, pass, R.drawable.baseline_check_24);
 
     }
 

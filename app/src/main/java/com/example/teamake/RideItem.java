@@ -2,23 +2,22 @@ package com.example.teamake;
 
 public class RideItem {
 
-    private int uniImg,inviteCheck,infoLocation;
+    private int uniImg,inviteCheck;
     private String universityText;
     private String dateRide;
 
     private String timeRide; // HH:mm
 
+    private String RideID,Passenger;
 
-    private String RideID;
 
-
-    public RideItem(String RideID, int uniImg, String universityText, String dateMatch, String timeMatch, Integer locationInfo,Integer inviteCheck){
+    public RideItem(String RideID, int uniImg, String universityText, String dateMatch, String timeMatch, String passenger,Integer inviteCheck){
         this.RideID = RideID;
         this.uniImg = uniImg;
         this.universityText = universityText;
         this.dateRide = dateMatch;
         this.timeRide = timeMatch;
-        this.infoLocation = locationInfo;
+        this.Passenger = passenger;
         this.inviteCheck = inviteCheck;
 
     }
@@ -43,8 +42,8 @@ public class RideItem {
         return timeRide;
     }
 
-    public int getInfoLocation() {
-        return infoLocation;
+    public String getPassenger() {
+        return Passenger;
     }
 
     public String getRideID() {

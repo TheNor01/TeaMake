@@ -159,11 +159,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/pendingInvites"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="126dp"
             android:layout_weight="1"
 
-            android:scrollbars="vertical"
             android:background="#94DA43"
+            android:scrollbars="vertical"
             android:text="Invites" />
 
 

@@ -50,8 +50,8 @@ public class DriverListActivity extends AppCompatActivity {
         driversViewList.setLayoutManager(new LinearLayoutManager(this));
 
         driversArrayList = new ArrayList<>();
-        driversAdapter = new DriversAdapter(driversArrayList);
-        driversViewList.setAdapter(driversAdapter);
+//        driversAdapter = new DriversAdapter(driversArrayList);
+//        driversViewList.setAdapter(driversAdapter);
 
         EventChangeListener();
 

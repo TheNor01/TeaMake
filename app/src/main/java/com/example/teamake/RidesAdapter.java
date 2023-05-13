@@ -25,11 +25,16 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesViewHol
         customListener=listener;
     }
 
+    public void showInfoLocationListener(OnItemClickListener listener){
+        customListener=listener;
+    }
+
+
 
     public  static class RidesViewHolder extends RecyclerView.ViewHolder {
         ImageView uniImage;
-        TextView universityName,rideDate,rideTime;
-        ImageButton inviteImCheck,locationCoord;
+        TextView universityName,rideDate,rideTime,passengerTv;
+        ImageButton inviteImCheck;
 
         public RidesViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
@@ -37,8 +42,7 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesViewHol
             universityName = itemView.findViewById(R.id.myUniversity);
             rideDate = itemView.findViewById(R.id.rideDate);
             rideTime = itemView.findViewById(R.id.rideTime);
-            locationCoord = itemView.findViewById(R.id.locationInfo);
-
+            passengerTv = itemView.findViewById(R.id.locationInfo);
             inviteImCheck = itemView.findViewById(R.id.inviteImCheck);
 
             inviteImCheck.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +82,7 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesViewHol
         holder.universityName.setText(currentMatch.getUniversityText());
         holder.rideDate.setText(currentMatch.getDateRide());
         holder.rideTime.setText(String.valueOf(currentMatch.getTimeRide()));
-        holder.locationCoord.setImageResource(currentMatch.getInfoLocation());
+        holder.passengerTv.setText(currentMatch.getPassenger());
         holder.inviteImCheck.setImageResource(currentMatch.getInviteCheck());
         //holder.inviteImCheck.setVisibility(View.GONE);
 
