@@ -23,14 +23,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.type.LatLng;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class CreateRideActivity extends AppCompatActivity {
 
     double LAT,LNG;
 
-    Map<String, Object> matchMap = new HashMap<>();
+    Map<String, Object> rideMap = new HashMap<>();
     ArrayList<String> invitedUsersUID;
 
     private DatePickerDialog.OnDateSetListener dateListener;
@@ -246,6 +245,10 @@ public class CreateRideActivity extends AppCompatActivity {
                     return;
                 }
 
+                if (LAT==0.00 || LNG == 0.00) {
+                    Toast.makeText(CreateRideActivity.this, "Choose a valid starting location", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 //PREPARE INSERT INTO//
                 Log.i("CreateRide", "Creating ride.. INFO:");
@@ -253,6 +256,8 @@ public class CreateRideActivity extends AppCompatActivity {
                 Log.i("CreateRide", "Uni choosed = " + choosedUniversity);
                 Log.i("CreateRide", "Date choosed = " + choosedDate);
                 Log.i("CreateRide", "Time choosed = " + choosedTime);
+                Log.i("CreateRide", "LAT Location = " + LAT);
+                Log.i("CreateRide", "LNG Location = " + LNG);
 
 
                 invitedUsersUID = new ArrayList<>();
@@ -269,16 +274,19 @@ public class CreateRideActivity extends AppCompatActivity {
                     Passengers .put("NULL", "notAcceptedRide");
                 }
 
-                matchMap.put("Date", choosedDate);
-                matchMap.put("Time", choosedTime);
-                matchMap.put("University", choosedUniversity);
-                matchMap.put("FreeSeats", countSeatsValue);
-                matchMap.put("Driver",userLogged.getUid() );
-                matchMap.put("Status", "Pending");
-                matchMap.put("Passengers", Passengers );
+                rideMap.put("Date", choosedDate);
+                rideMap.put("Time", choosedTime);
+                rideMap.put("University", choosedUniversity);
+                rideMap.put("Seats", countSeatsValue);
+                rideMap.put("Driver",userLogged.getUid() );
+                rideMap.put("Status", "Pending");
+                rideMap.put("Passengers", Passengers);
+
+                GeoPoint geoLocation = new GeoPoint(LAT,LNG);
+                rideMap.put("geoMarker", geoLocation );
                 //matchMap.put("MarkerStartingLocation", location );
 
-                FireDb.collection("Matches").add(matchMap)
+                FireDb.collection("Matches").add(rideMap)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {

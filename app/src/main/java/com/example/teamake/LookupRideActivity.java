@@ -66,24 +66,22 @@ public class LookupRideActivity extends AppCompatActivity {
                     if(result.getResultCode() == 444) {
                         String UID,nickname;
                         Integer position;
+                        int seats;
                         Intent data = result.getData();
                         if(data != null) {
                             System.out.println(data);
                             UID = data.getStringExtra("UID");
                             nickname = data.getStringExtra("nickname");
+                            seats = data.getIntExtra("seats",-1);
                             position = Integer.parseInt(data.getStringExtra("position"));
                             
-                            Log.i("LookupRide -- results:",UID+" - at "+position);
+                            Log.i("LookupRide -- results:",UID+" - at "+position+ "Free seats:"+ seats);
 
-                            boolean isAlreadyPresent = driverListToSend.stream().anyMatch(o -> UID.equals(o.getUID()));
-
-                            if(isAlreadyPresent ) Toast.makeText(LookupRideActivity.this, "User already inserted", Toast.LENGTH_SHORT).show();
-                            else {
-                                driverListToSend.get(position).setNicknameToLooking(nickname);
-                                driverListToSend.get(position).setUID(UID);
-                                driverListToSend.get(position).setImageToPlayersPending();
-                                mAdapter1.notifyItemChanged(position);
-                            }
+                            driverListToSend.get(position).setNicknameToLooking(nickname);
+                            driverListToSend.get(position).setUID(UID);
+                            driverListToSend.get(position).setImageToPlayersPending();
+                            driverListToSend.get(position).setSeats(seats);
+                            mAdapter1.notifyItemChanged(position);
                         }
                     }
                 }

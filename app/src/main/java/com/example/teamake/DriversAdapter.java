@@ -28,6 +28,7 @@ public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersV
     public static class PlayersViewHolder extends RecyclerView.ViewHolder {
         ImageView imageInvite;
         TextView nickname;
+        TextView seats;
 
 
         // i have to pass listener into costructor, cause i cannot access to static field
@@ -36,6 +37,7 @@ public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersV
             super(itemView);
             imageInvite = itemView.findViewById(R.id.inviteImg);
             nickname = itemView.findViewById(R.id.nicknameUser);
+            seats = itemView.findViewById(R.id.freeSeats);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -65,10 +67,11 @@ public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersV
     }
 
     public void onBindViewHolder(@NonNull DriversAdapter.PlayersViewHolder holder, int position) {
-        UserItem currentPlayer = driverList.get(position);
+        UserItem currentDriver = driverList.get(position);
 
-        holder.imageInvite.setImageResource(currentPlayer.getInviteImg());
-        holder.nickname.setText(currentPlayer.getNicknameText());
+        holder.imageInvite.setImageResource(currentDriver.getInviteImg());
+        holder.nickname.setText(currentDriver.getNicknameText());
+        holder.seats.setText(Integer.toString(currentDriver.getFreeSeats()));
     }
     @Override
     public int getItemCount() {

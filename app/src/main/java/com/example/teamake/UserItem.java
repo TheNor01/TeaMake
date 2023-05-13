@@ -36,6 +36,12 @@ public class UserItem {
         return FreeSeats;
     }
 
+    public void setSeats(int seats) {
+        this.FreeSeats=seats;
+    }
+
+
+
     public void setImageToPlayersPending(){
         this.inviteImg=R.drawable.baseline_how_to_reg_24;
     }
