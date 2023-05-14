@@ -3,14 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/teal_700"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Choose your driver"
+        android:textColor="@color/white"
+        android:textSize="40dp">
+    </TextView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listPlayers"
-        android:layout_width="337dp"
+        android:layout_width="match_parent"
         android:layout_height="466dp"
         android:scrollbars="vertical" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mapDriver"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="211dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.63"
+        tools:context="com.example.teamake.DriverListActivity"
+        tools:layout="@android:layout/simple_gallery_item" />
 
 
 </LinearLayout>

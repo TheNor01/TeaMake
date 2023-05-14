@@ -12,6 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -21,6 +27,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -29,7 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class DriverListActivity extends AppCompatActivity {
+public class DriverListActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference playersRef = db.collection("UserBasicInfo");
@@ -38,6 +45,9 @@ public class DriverListActivity extends AppCompatActivity {
     RecyclerView driversViewList;
     ArrayList<UserItem> driversArrayList;
     HashMap<String,ArrayList<String>> mapDrivers = new HashMap<>();
+
+    GoogleMap gMap;
+    MarkerOptions marker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,11 +59,43 @@ public class DriverListActivity extends AppCompatActivity {
         driversViewList.setHasFixedSize(true);
         driversViewList.setLayoutManager(new LinearLayoutManager(this));
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapDriver);
+
+        mapFragment.getMapAsync(this);
+
         driversArrayList = new ArrayList<>();
 //        driversAdapter = new DriversAdapter(driversArrayList);
 //        driversViewList.setAdapter(driversAdapter);
 
+
         EventChangeListener();
+
+
+    }
+
+    public void onMapReady(GoogleMap googleMap) {
+
+
+        gMap = googleMap;
+
+        gMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+
+                // es LatLng sydney = new LatLng(-33.852, 151.211);
+                MarkerOptions mopt = new MarkerOptions();
+                mopt.position(latLng);
+                mopt.title(latLng.latitude+ ":"+latLng.longitude);
+                gMap.clear();
+
+                //zoom level 10
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,14));
+                gMap.addMarker(mopt);
+                marker = mopt;
+            }
+        });
+
 
 
     }
@@ -199,7 +241,42 @@ public class DriverListActivity extends AppCompatActivity {
                 intent.putExtra("seats",seats);
                 intent.putExtra("ride",rideId);
                 setResult(444, intent);
-                finish();
+
+                populateMarkerMap(rideId);
+
+                //finish();
+            }
+
+            private void populateMarkerMap(String rideId) {
+
+                ridesRef.whereEqualTo(FieldPath.documentId(),rideId)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if(task.isSuccessful() && !task.getResult().isEmpty()){
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                        GeoPoint geoDb = document.getGeoPoint("geoMarker");
+                                        Log.i("DriverList","FOUND GEOPOINT" + geoDb);
+
+                                        MarkerOptions mopt = new MarkerOptions();
+                                        LatLng latLng = new LatLng(geoDb.getLatitude(),geoDb.getLongitude());
+                                        mopt.position(latLng);
+                                        mopt.title(latLng.latitude+ ":"+latLng.longitude);
+                                        gMap.clear();
+
+                                        //zoom level 10
+                                        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,14));
+                                        gMap.addMarker(mopt);
+
+                                    }
+                                }else {
+                                    Log.d("DriverListActivity", "Error getting GEOPOINT ", task.getException());
+                                }
+                            }
+                        });
+
             }
         });
 
