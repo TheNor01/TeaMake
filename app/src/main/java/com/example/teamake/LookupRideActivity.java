@@ -76,7 +76,7 @@ public class LookupRideActivity extends AppCompatActivity {
                     //Driver lookup
                     if(result.getResultCode() == 444) {
                         String UID,nickname,rideId;
-                        Integer position;
+                        int position;
                         int seats;
                         Intent data = result.getData();
                         if(data != null) {
@@ -85,7 +85,7 @@ public class LookupRideActivity extends AppCompatActivity {
                             nickname = data.getStringExtra("nickname");
                             rideId = data.getStringExtra("ride");
                             seats = data.getIntExtra("seats",-1);
-                            position = Integer.parseInt(data.getStringExtra("position"));
+                            position = data.getIntExtra("position",-1);
                             
                             Log.i("LookupRide -- results:",UID+" - at "+position+ " - Free seats:"+ seats + " - rideId: "+rideId);
 

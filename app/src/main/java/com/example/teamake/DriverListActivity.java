@@ -4,6 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +52,12 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
     GoogleMap gMap;
     MarkerOptions marker;
 
+    Button confirmLocationLookup;
+
+    String UID_choosen,ride_choosen,nickname_choosen;
+    int position_choosen,seats_choosen;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +68,36 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
         driversViewList.setHasFixedSize(true);
         driversViewList.setLayoutManager(new LinearLayoutManager(this));
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.mapDriver);
+        confirmLocationLookup = findViewById(R.id.confirmLocationLookup);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapDriver);
 
         mapFragment.getMapAsync(this);
 
         driversArrayList = new ArrayList<>();
 //        driversAdapter = new DriversAdapter(driversArrayList);
 //        driversViewList.setAdapter(driversAdapter);
+
+
+
+        confirmLocationLookup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(UID_choosen != null) {
+                    Intent intent = new Intent();
+                    intent.putExtra("UID", UID_choosen);
+                    intent.putExtra("position", position_choosen);
+                    intent.putExtra("nickname", nickname_choosen);
+                    intent.putExtra("seats", seats_choosen);
+                    intent.putExtra("ride", ride_choosen);
+                    setResult(444, intent);
+                    finish();
+                }else {
+                    Toast.makeText(DriverListActivity.this, "SELECT AT LEAST 1 DRIVER", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
 
         EventChangeListener();
@@ -169,35 +200,37 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
                     Log.d("DriverListActivity", "Error getting documents: ", task.getException());
                 }
 
-                Query getNickname = playersRef
-                        .whereIn(FieldPath.documentId(),new ArrayList<>(mapDrivers.keySet()));
+                if(!mapDrivers.isEmpty()) {
+                    Query getNickname = playersRef
+                            .whereIn(FieldPath.documentId(), new ArrayList<>(mapDrivers.keySet()));
 
-                getNickname.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.getResult().isEmpty()) {
-                            Log.d("DriverListActivity", "size info users empty");
-                            finish();
-                        }
-                        if(task.isSuccessful()){
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String nickname = document.getString("Nickname");
-
-                                ArrayList<String> localInfo = new ArrayList<>();
-                                localInfo = mapDrivers.get(document.getId());
-                                localInfo.set(0,nickname);
-
-                                Log.d("DriverList info", "UID:"+document.getId()+" with info:"+localInfo);
-
-                                UserItem PI = new UserItem(R.drawable.baseline_person_24,localInfo.get(0),localInfo.get(1),Integer.valueOf(localInfo.get(2)));
-                                driversArrayList.add(PI);
+                    getNickname.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.getResult().isEmpty()) {
+                                Log.d("DriverListActivity", "size info users empty");
+                                finish();
                             }
-                        }else {
-                            Log.d("DriverListActivity", "Error getting documents INFO: ", task.getException());
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String nickname = document.getString("Nickname");
+
+                                    ArrayList<String> localInfo = new ArrayList<>();
+                                    localInfo = mapDrivers.get(document.getId());
+                                    localInfo.set(0, nickname);
+
+                                    Log.d("DriverList info", "UID:" + document.getId() + " with info:" + localInfo);
+
+                                    UserItem PI = new UserItem(R.drawable.baseline_person_24, localInfo.get(0), localInfo.get(1), Integer.valueOf(localInfo.get(2)));
+                                    driversArrayList.add(PI);
+                                }
+                            } else {
+                                Log.d("DriverListActivity", "Error getting documents INFO: ", task.getException());
+                            }
+                            buildRecyclerView();
                         }
-                        buildRecyclerView();
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -234,13 +267,11 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
                 String localPosition = extras.get("position").toString();
                 Log.i("DriverList",  "calling intent position: "+localPosition);
 
-                Intent intent = new Intent();
-                intent.putExtra("UID", localUid);
-                intent.putExtra("position",localPosition);
-                intent.putExtra("nickname",localNickname);
-                intent.putExtra("seats",seats);
-                intent.putExtra("ride",rideId);
-                setResult(444, intent);
+                UID_choosen = localUid;
+                position_choosen = position;
+                nickname_choosen = localNickname;
+                seats_choosen = seats;
+                ride_choosen = rideId;
 
                 populateMarkerMap(rideId);
 
@@ -280,8 +311,8 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
-
-
     }
+
+
 
 }

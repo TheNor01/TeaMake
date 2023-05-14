@@ -173,7 +173,7 @@ public class HomepageActivity extends AppCompatActivity  {
 
                         //Add sync task -- login sergio -- but it shows Kamado
                     } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        Log.d(TAG, "Error getting documents University : ", task.getException());
                     }
                 }
             });
