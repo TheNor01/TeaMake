@@ -142,7 +142,7 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
         String Time = intent.getStringExtra("Time");
 
 
-        Log.i("DriverListActivity", "Creating ride.. INFO:");
+        Log.i("DriverListActivity", " INFO:");
         Log.i("DriverListActivity", "Uni choosed = " + University);
         Log.i("DriverListActivity", "Date choosed = " + Date);
         Log.i("DriverListActivity", "Time choosed = " + Time);

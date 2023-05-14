@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 
 //Todo
@@ -162,6 +163,7 @@ public class HomepageActivity extends AppCompatActivity  {
             FireDb.collection(collectionInfoUser).document(userLogged.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
                     if (task.isSuccessful()) {
                         String nickname = task.getResult().get("Nickname").toString();
                         String university = task.getResult().get("University").toString();
@@ -309,7 +311,7 @@ public class HomepageActivity extends AppCompatActivity  {
     protected  void PopulateRecyclerView(ArrayList<String> invitesRide){
 
         Log.i(TAG,"DISPLAYING ALL PENDING REQUEST RIDE  FOR: "+userLogged.getUid());
-        Log.i(TAG, String.valueOf(invitesRide.size()));
+        Log.i(TAG, String.valueOf(invitesRide.size()) + invitesRide);
         if(!invitesRide.isEmpty()) {
             Rides
                     .whereIn(FieldPath.documentId(), invitesRide)
@@ -326,8 +328,8 @@ public class HomepageActivity extends AppCompatActivity  {
 
                                     List<String> passengersKeys = new ArrayList<>(passengers.keySet());
 
-                                    if (passengersKeys.contains(userLogged.getUid())) isPlayerInvited = true;
-                                    if (status.equals("Pending") && isPlayerInvited) {
+                                    //if (passengersKeys.contains(userLogged.getUid())) isPlayerInvited = true;
+                                    if (status.equals("Pending")) {
 
                                         for(String localPass : passengersKeys){
                                             if(!localPass.equals("NULL")) {
@@ -356,48 +358,35 @@ public class HomepageActivity extends AppCompatActivity  {
         iAdapter.setOnItemClickLister(new RidesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                String matchID = listInvitePending.get(position).getRideID();
-                Log.i(TAG,"Accepting ride adapter"+matchID);
-                Rides.document(matchID)
+                String rideId = listInvitePending.get(position).getRideID();
+                String passengerId = listInvitePending.get(position).getPassenger();
+                Log.i(TAG,"Accepting ride adapter: "+ rideId);
+                Rides
+                        .whereEqualTo(FieldPath.documentId(),rideId)
                         .get()
-                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                HashMap<String,ArrayList<String>> playerToUpdate = new HashMap<>();
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                HashMap<String,String> passengersToUpdate = new HashMap<>();
                                 if (task.isSuccessful()) {
-                                    DocumentSnapshot document = task.getResult();
-                                    if (document.exists()) {
-                                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-
-                                        playerToUpdate = ((HashMap<String,ArrayList<String>> ) document.get("Passengers"));
-                                        if(playerToUpdate.containsKey(userLogged.getUid())){
-                                            ModifyStatusPlayer(playerToUpdate);
-                                        }
-
-                                       // HashMap<String,String> team1
-                                    } else {
-                                        Log.d(TAG, "No such document");
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        passengersToUpdate = ((HashMap<String, String>) document.get("Passengers"));
+                                        passengersToUpdate.put(passengerId, "Accepted");
                                     }
                                 } else {
                                     Log.d(TAG, "get failed with ", task.getException());
                                 }
-
-                                if(playerToUpdate.isEmpty()) {
-                                    System.err.println("Map is empty");
-                                }
-                                else{
-                                    ModifyMatchPlayers(playerToUpdate,matchID,position);
-                                }
+                                ModifyMatchPassengers(passengersToUpdate,rideId,position);
                             }
                         });
             }
         });
     }
 
-    private void ModifyStatusPlayer(HashMap<String, ArrayList<String>> playerToUpdate) {
-        ArrayList<String> props = playerToUpdate.get(userLogged.getUid());
-        props.set(1, "Accepted");
-        playerToUpdate.put(userLogged.getUid(),props);
+    private void ModifyStatusPassenger(HashMap<String,String> playerToUpdate) {
+        //String props = playerToUpdate.get(userLogged.getUid());
+        //props.set(1, "Accepted");
+        playerToUpdate.put(userLogged.getUid(),"Accepted");
         Log.i(TAG,"Setting map changes for: "+userLogged.getUid()+"--"+ playerToUpdate.get(userLogged.getUid()));
     }
 
@@ -413,6 +402,11 @@ public class HomepageActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
+        if(userLogged == null) {
+            Intent backToLogin = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(backToLogin);
+            finish();
+        }
         buildViewMatches();
 
     }
@@ -420,12 +414,17 @@ public class HomepageActivity extends AppCompatActivity  {
     @Override
     protected void onPause() {
         super.onPause();
-        RidesManager.CheckForAllConfirmedPassengers();
+        if(userLogged == null) {
+            Intent backToLogin = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(backToLogin);
+            finish();
+        }
+        //RidesManager.CheckForAllConfirmedPassengers();
     }
 
 
     private void buildViewMatches() {
-        Log.i(TAG,"ON RESUME");
+        Log.i(TAG,"ON RESUME , Checking new notifications");
         ArrayList<String> newRides = new ArrayList<>();
         Notifications
                 .whereEqualTo("UID", userLogged.getUid())
@@ -456,7 +455,7 @@ public class HomepageActivity extends AppCompatActivity  {
                         Log.d(TAG, "new rides: " + newRides);
                         Log.i(TAG, String.valueOf(newRides.size()));
                         if(!newRides.isEmpty()) {
-                            Log.i(TAG, "calling populate v2 for : " + userLogged.getUid());
+                            Log.i(TAG, "calling populate recy for : " + userLogged.getUid());
                             PopulateRecyclerView(newRides);
                         }
                         else {
@@ -467,23 +466,25 @@ public class HomepageActivity extends AppCompatActivity  {
                 });
     }
 
-    protected void ModifyMatchPlayers(HashMap<String,ArrayList<String>> mapToUpload,String matchID,int position){
-        Rides.document(matchID).update("Players",mapToUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
+    protected void ModifyMatchPassengers(HashMap<String,String> mapToUpload, String rideID, int position){
+        Rides.document(rideID).update("Passengers",mapToUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
                 String notificationToRemove = null;
 
                 if (task.isSuccessful()) {
-                    Log.i(TAG,"UPDATED ride id"+matchID);
-                    notificationToRemove = linkingNotificationRides.get(matchID);
+                    Log.i(TAG,"UPDATED passengers map of ride: "+rideID);
+                    notificationToRemove = linkingNotificationRides.get(rideID);
                 }
                 else {
                     Log.d(TAG, "get failed with ", task.getException());
                 }
 
-                if(notificationToRemove != null) RemoveNotificationFromDbList(matchID,notificationToRemove,position);
+                if(notificationToRemove != null) RemoveNotificationFromDbList(rideID,notificationToRemove,position);
 
+                List<String> key = new ArrayList<>(mapToUpload.keySet());
+                RidesManager.CheckForAllConfirmedPassengers(key.get(0));
             }
         });
     }
@@ -508,7 +509,7 @@ public class HomepageActivity extends AppCompatActivity  {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Notification"+ notificationToRemove +" successfully deleted!");
+                        Log.d(TAG, "Notification: "+ notificationToRemove +" successfully deleted!");
                         linkingNotificationRides.remove(matchID);
                         listInvitePending.remove(position);
                         iAdapter.notifyItemChanged(position);

@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG,"Switching to Register Activity");
                 Intent intentRegister = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intentRegister);
-                finish();
+                //finish();
             }
         });
 

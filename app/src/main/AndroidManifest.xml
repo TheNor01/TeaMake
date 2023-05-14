@@ -46,11 +46,6 @@
         <activity
             android:name=".HomepageActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" /> <!-- launch activity as first -->
-            </intent-filter>
         </activity>
 
 
@@ -80,7 +75,11 @@
             android:name=".MainActivity"
             android:launchMode="singleInstance"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" /> <!-- launch activity as first -->
+            </intent-filter>
         </activity>
     </application>
 

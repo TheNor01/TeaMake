@@ -87,7 +87,7 @@ public class LookupRideActivity extends AppCompatActivity {
                             seats = data.getIntExtra("seats",-1);
                             position = data.getIntExtra("position",-1);
                             
-                            Log.i("LookupRide -- results:",UID+" - at "+position+ " - Free seats:"+ seats + " - rideId: "+rideId);
+                            Log.i("LookupRide -- results Driver:",UID+" - at "+position+ " - Free seats:"+ seats + " - rideId: "+rideId);
 
                             driverListToSend.get(position).setNicknameToLooking(nickname);
                             driverListToSend.get(position).setUID(UID);
@@ -268,10 +268,10 @@ public class LookupRideActivity extends AppCompatActivity {
 
 
     protected void sendPlayerNotification(String id_match){
-        ArrayList<String> allUID = new ArrayList<>();
-        allUID.addAll(driversUIDs);
-
-        for(String uid: allUID) {
+        for(String uid: driversUIDs) {
+            if(uid.equals("Dummy")) {
+                continue;
+            }
             HashMap<String, String> localMap = new HashMap<>();
             localMap.put("id_ride", id_match);
             localMap.put("UID", uid);
