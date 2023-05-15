@@ -67,9 +67,12 @@
         <activity
             android:name=".CreateRideActivity"
             android:exported="true">
-
         </activity>
 
+        <activity
+            android:name=".MapsActivitySingle"
+            android:exported="true">
+        </activity>
 
         <activity
             android:name=".MainActivity"

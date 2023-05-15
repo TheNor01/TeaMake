@@ -484,7 +484,7 @@ public class HomepageActivity extends AppCompatActivity  {
                 if(notificationToRemove != null) RemoveNotificationFromDbList(rideID,notificationToRemove,position);
 
                 List<String> key = new ArrayList<>(mapToUpload.keySet());
-                RidesManager.CheckForAllConfirmedPassengers(key.get(0));
+                RidesManager.CheckForAllConfirmedPassengers(key.get(0),rideID);
             }
         });
     }

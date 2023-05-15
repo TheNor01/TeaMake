@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -28,9 +29,11 @@ public class RidesManager {
     private static CollectionReference Matches = FireDb.collection("Matches");
 
 
+    //we check for a ride with driver X if the new accepted users is the last one.
+    //If so, the ride is Ready
 
     // fare in modo che questa logica venga spostata nel main
-    protected static void CheckForAllConfirmedPassengers(String keyPass){
+    protected static void CheckForAllConfirmedPassengers(String keyPass,String rideID){
 
         if(auth.getCurrentUser() == null){
             return;
@@ -43,6 +46,8 @@ public class RidesManager {
 
         Matches
                 //.whereArrayContains("Players",auth.getCurrentUser().getUid()) //problem
+                .whereEqualTo(FieldPath.documentId(), rideID)
+                .whereEqualTo("Driver",userLogger.getUid())
                 .orderBy(queryTerm)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

@@ -11,15 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RidesActivity extends AppCompatActivity {
 
@@ -29,7 +34,7 @@ public class RidesActivity extends AppCompatActivity {
     FirebaseUser userLogged;
 
     RecyclerView recyclerView;
-    RecyclerView.Adapter adapterData;
+    RidesAdapter adapterData;
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
     private CollectionReference Rides = FireDb.collection("Matches");
@@ -58,6 +63,38 @@ public class RidesActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapterData);
 
+        adapterData.setOnItemClickLister(new RidesAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                String rideToLookup = ridesList.get(position).getRideID();
+                Rides
+                        .whereEqualTo(FieldPath.documentId(),rideToLookup)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.getResult().isEmpty()) {
+                                    Log.d("RidesActivity", "lookup info geopoint");
+                                    finish();
+                                }
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        GeoPoint marker = document.getGeoPoint("geoMarker");
+
+                                        Intent callMap = new Intent(getApplicationContext(),MapsActivitySingle.class);
+                                        callMap.putExtra("Lat",marker.getLatitude());
+                                        callMap.putExtra("Lng",marker.getLongitude());
+                                        startActivity(callMap);
+
+                                    }
+                                } else {
+                                    Log.d("DriverListActivity", "Error getting documents INFO: ", task.getException());
+                                }
+                            }
+                        });
+            }
+        });
+
         userLogged = mAuth.getCurrentUser();
         if(userLogged == null){
             Intent backToLogin =  new Intent(getApplicationContext(),MainActivity.class);
@@ -72,11 +109,23 @@ public class RidesActivity extends AppCompatActivity {
 
     protected  void PopulateRecyclerView(){
 
-        String queryTerm = "USERS ."+mAuth.getCurrentUser().getUid();
+        String queryTerm = "Passengers."+mAuth.getCurrentUser().getUid();
+
+
+        Task driverTask  = Rides.whereEqualTo("Driver",mAuth.getCurrentUser().getUid()).get();
+        Task passengerTask = Rides.orderBy(queryTerm).get();
+        // we have to populate either Driver rides and passengers ride, cause passengers is a map
+        // order by cannot go with OR clause (it works as contains) I have to do 2 sets, driver and passenger
+        // and check where logged user is.
+
+        Query RideQuery = Rides.where(Filter.or(
+                Filter.equalTo("Driver",userLogged.getUid()),
+                Filter.equalTo("Passengers."+userLogged.getUid(), "Accepted")
+        ));
+
 
         Log.i(TAG,"DISPLAYING ALL CONFIRMED RIDES  FOR: "+userLogged.getUid());
-            Rides
-                    .orderBy(queryTerm)
+        RideQuery
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -84,7 +133,8 @@ public class RidesActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
 
                                 if(task.getResult().isEmpty()){
-                                    RideItem MI = new RideItem("dummy", R.drawable.baseline_school_24, "dummy", "2023/04/02", "00:00",userLogged.getUid(), R.drawable.baseline_notifications_24);
+                                    Log.d("RidesActivity","Empty confirmed LIST DRIVES");
+                                    RideItem MI = new RideItem("dummy", R.drawable.baseline_school_24, "dummy", "2023/04/02", "00:00",userLogged.getUid(), R.drawable.baseline_check_24);
                                     ridesList.add(MI);
                                 }
                                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -115,11 +165,12 @@ public class RidesActivity extends AppCompatActivity {
         String date = document.getString("Date");
         String time = document.getString("Time");
         String destinationUniversity = document.getString("University");
-        int locationInfo = Integer.parseInt(document.getString("MarkerStartingLocation"));
+        GeoPoint locationInfo = document.getGeoPoint("geoMarker");
 
-        return new RideItem(document.getId(), R.drawable.baseline_school_24, destinationUniversity, date, time,userLogged.getUid(), R.drawable.baseline_info_24);
-
+        return new RideItem(document.getId(), R.drawable.baseline_school_24, destinationUniversity, date, time,"Ready to GO", R.drawable.baseline_info_24);
     }
+
+
 
 
 
