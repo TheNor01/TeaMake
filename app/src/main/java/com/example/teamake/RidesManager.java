@@ -4,8 +4,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -33,50 +35,53 @@ public class RidesManager {
     //If so, the ride is Ready
 
     // fare in modo che questa logica venga spostata nel main
-    protected static void CheckForAllConfirmedPassengers(String keyPass,String rideID){
+    protected static void CheckForAllConfirmedPassengers(String rideID){
 
         if(auth.getCurrentUser() == null){
             return;
         }
         Log.i("Rmanager","CheckForAllConfirmedRides");
         Log.i("Rmanager user",userLogger.getUid());
+        Log.i("Rmanager ride id",rideID);
 
         //String queryTerm = "Players."+auth.getCurrentUser().getUid()+".exists";
-        String queryTerm = "Passengers."+keyPass;
 
         Matches
                 //.whereArrayContains("Players",auth.getCurrentUser().getUid()) //problem
                 .whereEqualTo(FieldPath.documentId(), rideID)
                 .whereEqualTo("Driver",userLogger.getUid())
-                .orderBy(queryTerm)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                         HashMap<String,String> passengers;
 
-                        if(queryDocumentSnapshots.isEmpty()) Log.i("Rmanager","EMPTY RESULTS");
+                        if(task.getResult().isEmpty())
+                        {
+                            Log.i("Rmanager","EMPTY RESULTS");
+                        }
+                        else {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                Log.i("Rmanager Doc", document.getId());
+                                if (document.getString("Status").equals("Confirmed")) continue;
 
-                            Log.i("Rmanager Doc",document.getId());
-                            if(document.getString("Status").equals("Confirmed")) continue;
+                                passengers = ((HashMap<String, String>) document.get("Passengers"));
+                                int seats = document.getLong("Seats").intValue();
+                                Log.i("Rmanager", "rideID" + document.getId() + " Size of passengers: " + passengers.keySet().size());
 
-                            passengers = ((HashMap<String,String> ) document.get("Passengers"));
-                            int seats = document.getLong("Seats").intValue();
-                            Log.i("Rmanager","rideID"+document.getId()+" Size of passengers: "+passengers.keySet().size());
-
-                            int counter=0;
-                            for(String UID: passengers.keySet()){
-                                String props = passengers.get(UID);
-                                if(props.equals("Accepted")){
-                                    counter++;
+                                int counter = 0;
+                                for (String UID : passengers.keySet()) {
+                                    String props = passengers.get(UID);
+                                    if (props.equals("Accepted")) {
+                                        counter++;
+                                    }
                                 }
-                            }
-                            if(counter==seats){
-                                Log.i("Rmanager","RIDE IS READY TO GO");
-                                SetReadyMatch(document.getId());
+                                if (counter == seats) {
+                                    Log.i("Rmanager", "RIDE IS READY TO GO");
+                                    SetReadyMatch(document.getId());
+                                }
                             }
                         }
                     }

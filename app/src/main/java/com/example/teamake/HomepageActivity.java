@@ -72,7 +72,7 @@ public class HomepageActivity extends AppCompatActivity  {
     private CollectionReference Rides = FireDb.collection("Matches");
 
     FirebaseUser userLogged;
-    TextView profileNameTV, universityTv, offerRide, lookingForRide, myRides;
+    TextView profileNameTV, universityTv,phoneTv,addressTv, offerRide, lookingForRide, myRides;
 
     Button logoutBtn;
 
@@ -138,6 +138,8 @@ public class HomepageActivity extends AppCompatActivity  {
         offerRide = findViewById(R.id.textRideOfferTv);
         myRides = findViewById(R.id.myRidesTv);
         universityTv = findViewById(R.id.myUniversity);
+        phoneTv = findViewById(R.id.myPhone);
+        addressTv = findViewById(R.id.myAddress);
         imageViewProfile = findViewById(R.id.imageViewMainPic);
         logoutBtn = findViewById(R.id.buttonLogout);
 
@@ -167,11 +169,15 @@ public class HomepageActivity extends AppCompatActivity  {
                     if (task.isSuccessful()) {
                         String nickname = task.getResult().get("Nickname").toString();
                         String university = task.getResult().get("University").toString();
+                        String phone    = task.getResult().get("Phone").toString();
+                        String address = task.getResult().get("Address").toString();
 
 
                         Log.i(TAG,"LOGGED USER NICK:"+nickname);
                         profileNameTV.setText(nickname);
                         universityTv.setText(university);
+                        phoneTv.setText(phone);
+                        addressTv.setText(address);
 
                         //Add sync task -- login sergio -- but it shows Kamado
                     } else {
@@ -323,7 +329,7 @@ public class HomepageActivity extends AppCompatActivity  {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                     String status = document.getString("Status");
-                                    HashMap<String,ArrayList<String>> passengers = ((HashMap<String,ArrayList<String>> ) document.get("Passengers"));
+                                    HashMap<String,String> passengers = ((HashMap<String,String> ) document.get("Passengers"));
                                     boolean isPlayerInvited = false;
 
                                     List<String> passengersKeys = new ArrayList<>(passengers.keySet());
@@ -332,7 +338,7 @@ public class HomepageActivity extends AppCompatActivity  {
                                     if (status.equals("Pending")) {
 
                                         for(String localPass : passengersKeys){
-                                            if(!localPass.equals("NULL")) {
+                                            if(!localPass.equals("NULL") && !passengers.get(localPass).equals("Accepted")) {
                                                 RideItem RI = CreateRideEntry(document, localPass);
                                                 //RideItem RI = new RideItem(document.getId(), imageToUse, sport, date, -1, -1, R.drawable.baseline_check_24);
                                                 listInvitePending.add(RI);
@@ -383,12 +389,7 @@ public class HomepageActivity extends AppCompatActivity  {
         });
     }
 
-    private void ModifyStatusPassenger(HashMap<String,String> playerToUpdate) {
-        //String props = playerToUpdate.get(userLogged.getUid());
-        //props.set(1, "Accepted");
-        playerToUpdate.put(userLogged.getUid(),"Accepted");
-        Log.i(TAG,"Setting map changes for: "+userLogged.getUid()+"--"+ playerToUpdate.get(userLogged.getUid()));
-    }
+
 
 
     @Override
@@ -460,7 +461,7 @@ public class HomepageActivity extends AppCompatActivity  {
                             PopulateRecyclerView(newRides);
                         }
                         else {
-                            Log.d(TAG, "Checking notification, Error getting documents: ", task.getException());
+                            Log.d(TAG, "Checking notification, empty notifications: ", task.getException());
                         }
 
                     }
@@ -485,7 +486,7 @@ public class HomepageActivity extends AppCompatActivity  {
                 if(notificationToRemove != null) RemoveNotificationFromDbList(rideID,notificationToRemove,position);
 
                 List<String> key = new ArrayList<>(mapToUpload.keySet());
-                RidesManager.CheckForAllConfirmedPassengers(key.get(0),rideID);
+                RidesManager.CheckForAllConfirmedPassengers(rideID);
             }
         });
     }
