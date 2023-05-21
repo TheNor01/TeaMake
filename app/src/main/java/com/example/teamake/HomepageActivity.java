@@ -345,7 +345,7 @@ public class HomepageActivity extends AppCompatActivity  {
                                 //LinkAdapterToList();
                                 iAdapter.notifyDataSetChanged();
                             } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
+                                Log.d(TAG, "PENDING REQUEST Error getting documents: ", task.getException());
                             }
                         }
 
@@ -448,7 +448,8 @@ public class HomepageActivity extends AppCompatActivity  {
                                     Log.i(TAG,"ADDING NEW Notification: "+localNotification);
 
                                     linkingNotificationRides.put(localRide,localNotification);
-                                    newRides.add(document.getString("id_ride"));
+                                    String idRide = document.getString("id_ride");
+                                    if(!idRide.equals("null")) newRides.add(document.getString("id_ride"));
                                 }
                             }
                         }
@@ -459,7 +460,7 @@ public class HomepageActivity extends AppCompatActivity  {
                             PopulateRecyclerView(newRides);
                         }
                         else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            Log.d(TAG, "Checking notification, Error getting documents: ", task.getException());
                         }
 
                     }

@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     TextInputEditText edTextMail,edTextPw;
     Button loginButton;
     Button registerButton;
-    ProgressBar pgLoad;
 
     private static final String TAG = "MainActivity";
 

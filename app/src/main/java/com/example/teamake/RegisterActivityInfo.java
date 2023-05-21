@@ -31,7 +31,7 @@ import java.util.HashMap;
 public class RegisterActivityInfo extends AppCompatActivity {
 
 
-    TextInputEditText edNickname,edName,edSecondName;
+    TextInputEditText edNickname,edName,edSecondName,edAddress;
     Button storeInfoOnDb;
     String uniCheck="";
     RadioGroup radioGroup;
@@ -55,6 +55,7 @@ public class RegisterActivityInfo extends AppCompatActivity {
         edName = findViewById(R.id.nameEdit);
         edSecondName = findViewById(R.id.second_nameEdit);
         phoneEdit = findViewById(R.id.phone);
+        edAddress = findViewById(R.id.addressEdit);
 
 
         npAge = findViewById(R.id.agePicker);
@@ -83,12 +84,17 @@ public class RegisterActivityInfo extends AppCompatActivity {
                 Log.i(TAG,"INFO Name: "+ edName.getText().toString());
                 Log.i(TAG,"INFO SecondName: "+ edSecondName.getText().toString());
                 Log.i(TAG,"INFO phone: "+ phoneEdit.getText().toString());
+                Log.i(TAG,"INFO phone: "+ edAddress.getText().toString());
 
 
                 if(email.isEmpty() || pw.isEmpty()){
                     Toast.makeText(RegisterActivityInfo.this,"Please, Enter a valid email or password" , Toast.LENGTH_LONG).show();
                 } else if (uniCheck.equals("")) {
                     Toast.makeText(RegisterActivityInfo.this,"Please, Pick a valid university" , Toast.LENGTH_LONG).show();
+                }
+                else if(phoneEdit.equals("") || edAddress.equals("")){
+                    Toast.makeText(RegisterActivityInfo.this,"Please, Pick enter a valid phone/address" , Toast.LENGTH_LONG).show();
+
                 }else{
                     Log.i(TAG,"Storing Db auth");
                     CreateUserDb(email,pw);
@@ -140,6 +146,7 @@ public class RegisterActivityInfo extends AppCompatActivity {
         userInfo.put("Second Name",edSecondName.getText().toString());
         userInfo.put("Phone",phoneEdit.getText().toString());
         userInfo.put("University", uniCheck);
+        userInfo.put("Address", edAddress.getText().toString());
         FireDb.collection(collectionInfoUser).document(UID).set(userInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -147,6 +154,7 @@ public class RegisterActivityInfo extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivity(intent);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

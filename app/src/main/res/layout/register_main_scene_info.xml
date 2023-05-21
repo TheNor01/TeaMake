@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -67,6 +73,20 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:hint="Your Second Name"
                 android:id="@+id/second_nameEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:padding="15dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:hint="Your address"
+                android:id="@+id/addressEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
@@ -167,7 +187,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="55dp"
+            android:minHeight="32dp"
             android:id="@+id/signUpButtonInfo"
             android:text="Register">
         </Button>
@@ -175,3 +195,5 @@
 
     </LinearLayout>
 </LinearLayout>
+
+</ScrollView>
