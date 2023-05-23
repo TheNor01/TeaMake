@@ -37,7 +37,7 @@ public class RidesActivity extends AppCompatActivity {
     RidesAdapter adapterData;
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
-    private CollectionReference Rides = FireDb.collection("Matches");
+    private CollectionReference Rides = FireDb.collection("Rides");
 
     ArrayList<RideItem> ridesList = new ArrayList<>();
     private static final String TAG = "RidesActivity";
@@ -109,11 +109,8 @@ public class RidesActivity extends AppCompatActivity {
 
     protected  void PopulateRecyclerView(){
 
-        String queryTerm = "Passengers."+mAuth.getCurrentUser().getUid();
 
 
-        Task driverTask  = Rides.whereEqualTo("Driver",mAuth.getCurrentUser().getUid()).get();
-        Task passengerTask = Rides.orderBy(queryTerm).get();
         // we have to populate either Driver rides and passengers ride, cause passengers is a map
         // order by cannot go with OR clause (it works as contains) I have to do 2 sets, driver and passenger
         // and check where logged user is.

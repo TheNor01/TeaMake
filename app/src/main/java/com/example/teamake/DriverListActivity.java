@@ -43,7 +43,7 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference playersRef = db.collection("UserBasicInfo");
-    private CollectionReference ridesRef = db.collection("Matches");
+    private CollectionReference ridesRef = db.collection("Rides");
     DriversAdapter driversAdapter;
     RecyclerView driversViewList;
     ArrayList<UserItem> driversArrayList;

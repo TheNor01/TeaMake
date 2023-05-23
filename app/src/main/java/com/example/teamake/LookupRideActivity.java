@@ -191,7 +191,7 @@ public class LookupRideActivity extends AppCompatActivity {
         Map<String, String> passengers = new HashMap<>();
         passengers.put(userLogged.getUid(), "notAcceptedRide");
 
-        FireDb.collection("Matches")
+        FireDb.collection("Rides")
                 .document(rideToConfirm)
                 .update("Passengers."+userLogged.getUid(),"notAcceptedRide")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -267,13 +267,13 @@ public class LookupRideActivity extends AppCompatActivity {
     }
 
 
-    protected void sendPlayerNotification(String id_match){
+    protected void sendPlayerNotification(String id_ride){
         for(String uid: driversUIDs) {
             if(uid.equals("Dummy")) {
                 continue;
             }
             HashMap<String, String> localMap = new HashMap<>();
-            localMap.put("id_ride", id_match);
+            localMap.put("id_ride", id_ride);
             localMap.put("UID", uid);
             localMap.put("status", "unread");
             localMap.put("passenger", userLogged.getUid());

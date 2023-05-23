@@ -126,7 +126,7 @@ public class RegisterActivityInfo extends AppCompatActivity {
 //                                    FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(RegisterActivityInfo.this,"A new account has been created" , Toast.LENGTH_LONG).show();
                             String UID = task.getResult().getUser().getUid();
-                            Log.i(TAG,"CREATED:" + UID);
+                            Log.i(TAG,"CREATING :" + UID);
                             CreateUserInfoDb(UID);
                         } else {
                             // If sign in fails, display a message to the user.

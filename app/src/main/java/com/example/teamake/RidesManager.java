@@ -12,13 +12,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
-import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RidesManager {
@@ -28,7 +25,7 @@ public class RidesManager {
 
     private static final FirebaseUser userLogger = auth.getCurrentUser();
 
-    private static CollectionReference Matches = FireDb.collection("Matches");
+    private static CollectionReference Rides = FireDb.collection("Rides");
 
 
     //we check for a ride with driver X if the new accepted users is the last one.
@@ -46,7 +43,7 @@ public class RidesManager {
 
         //String queryTerm = "Players."+auth.getCurrentUser().getUid()+".exists";
 
-        Matches
+        Rides
                 //.whereArrayContains("Players",auth.getCurrentUser().getUid()) //problem
                 .whereEqualTo(FieldPath.documentId(), rideID)
                 .whereEqualTo("Driver",userLogger.getUid())
@@ -80,7 +77,7 @@ public class RidesManager {
                                 }
                                 if (counter == seats) {
                                     Log.i("Rmanager", "RIDE IS READY TO GO");
-                                    SetReadyMatch(document.getId());
+                                    SetReadyRide(document.getId());
                                 }
                             }
                         }
@@ -88,8 +85,8 @@ public class RidesManager {
                 });
     }
 
-    protected static void SetReadyMatch(String documentToChange){
-        FireDb.collection("Matches").document(documentToChange)
+    protected static void SetReadyRide(String documentToChange){
+        FireDb.collection("Rides").document(documentToChange)
                 .update("Status", "Confirmed")
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

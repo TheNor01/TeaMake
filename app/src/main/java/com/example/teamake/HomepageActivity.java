@@ -52,7 +52,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 
 //Todo
@@ -69,7 +68,7 @@ public class HomepageActivity extends AppCompatActivity  {
     private final FirebaseFirestore FireDb = FirebaseFirestore.getInstance();
 
     private CollectionReference Notifications = FireDb.collection("Notifications");
-    private CollectionReference Rides = FireDb.collection("Matches");
+    private CollectionReference Rides = FireDb.collection("Rides");
 
     FirebaseUser userLogged;
     TextView profileNameTV, universityTv,phoneTv,addressTv, offerRide, lookingForRide, myRides;
@@ -78,7 +77,7 @@ public class HomepageActivity extends AppCompatActivity  {
 
     ImageView imageViewProfile;
 
-    // NOTIFICATIONS PENDING MATCHES
+    // NOTIFICATIONS PENDING RIDES
     ArrayList<RideItem> listInvitePending;
     RecyclerView invitesRidePending;
     RidesAdapter iAdapter;
@@ -408,7 +407,7 @@ public class HomepageActivity extends AppCompatActivity  {
             startActivity(backToLogin);
             finish();
         }
-        buildViewMatches();
+        buildViewRides();
 
     }
 
@@ -424,7 +423,7 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-    private void buildViewMatches() {
+    private void buildViewRides() {
         Log.i(TAG,"ON RESUME , Checking new notifications");
         ArrayList<String> newRides = new ArrayList<>();
         Notifications
@@ -505,14 +504,14 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 
-    protected void RemoveNotificationFromDbList(String matchID,String notificationToRemove,int position){
+    protected void RemoveNotificationFromDbList(String rideID,String notificationToRemove,int position){
         Notifications.document(notificationToRemove)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Notification: "+ notificationToRemove +" successfully deleted!");
-                        linkingNotificationRides.remove(matchID);
+                        linkingNotificationRides.remove(rideID);
                         listInvitePending.remove(position);
                         iAdapter.notifyItemChanged(position);
                     }
@@ -528,4 +527,3 @@ public class HomepageActivity extends AppCompatActivity  {
     }
 
 }
-

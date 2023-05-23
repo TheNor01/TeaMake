@@ -287,9 +287,8 @@ public class CreateRideActivity extends AppCompatActivity {
 
                 GeoPoint geoLocation = new GeoPoint(LAT,LNG);
                 rideMap.put("geoMarker", geoLocation );
-                //matchMap.put("MarkerStartingLocation", location );
 
-                FireDb.collection("Matches").add(rideMap)
+                FireDb.collection("Rides").add(rideMap)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
