@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,11 +39,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class DriverListActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser userLogged;
     private CollectionReference playersRef = db.collection("UserBasicInfo");
     private CollectionReference ridesRef = db.collection("Rides");
     DriversAdapter driversAdapter;
@@ -62,6 +67,15 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drivers_list);
+
+
+        userLogged = auth.getCurrentUser();
+
+        if(userLogged == null) {
+            Intent backToLogin = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(backToLogin);
+            finish();
+        }
 
 
         driversViewList = findViewById(R.id.listPlayers);
@@ -152,6 +166,8 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
                 .whereEqualTo("University", University)
                 .whereEqualTo("Date", Date)
                 .whereEqualTo("Time", Time)
+                .whereEqualTo("Status","Pending")
+                //.whereNotEqualTo("users." + userLogged.getUid(), userLogged.getUid())
                 .whereGreaterThan("Seats",0);
 
 
@@ -160,17 +176,7 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.getResult().isEmpty()){
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(DriverListActivity.this);
-
-                    builder.setMessage("No driver or ride avaiable")
-                            .setTitle("WARNING");
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                           finish();
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                    ShowEmptyAlert();
 
                 }
 
@@ -183,6 +189,10 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
                         String rideId = document.getId();
                         String rideDriver = document.getString("Driver");
                         int freeSeats = (Integer) document.getLong("Seats").intValue();
+
+                        HashMap<String,String> passengers = ((HashMap<String,String> ) document.get("Passengers"));
+
+                        if(passengers.keySet().contains(userLogged.getUid())) continue; //already requested
 
                         ArrayList<String> tmpInfo = new ArrayList<>(3);
                         tmpInfo.add("Dummy");
@@ -231,8 +241,26 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
                         }
                     });
                 }
+                else{
+                    ShowEmptyAlert();
+                }
             }
         });
+
+    }
+
+    private void ShowEmptyAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DriverListActivity.this);
+
+        builder.setMessage("No driver or ride avaiable")
+                .setTitle("WARNING");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+               finish();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
     }
 
