@@ -192,7 +192,7 @@ public class DriverListActivity extends AppCompatActivity implements OnMapReadyC
 
                         HashMap<String,String> passengers = ((HashMap<String,String> ) document.get("Passengers"));
 
-                        if(passengers.keySet().contains(userLogged.getUid())) continue; //already requested
+                        if(passengers!=null) if(passengers.keySet().contains(userLogged.getUid())) continue; //already requested
 
                         ArrayList<String> tmpInfo = new ArrayList<>(3);
                         tmpInfo.add("Dummy");
