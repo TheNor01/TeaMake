@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersViewHolder>{
+public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.DriversViewHolder>{
 
     private ArrayList<UserItem> driverList;
 
@@ -25,7 +25,7 @@ public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersV
         customListener=listener;
     }
 
-    public static class PlayersViewHolder extends RecyclerView.ViewHolder {
+    public static class DriversViewHolder extends RecyclerView.ViewHolder {
         ImageView imageInvite;
         TextView nickname;
         TextView seats;
@@ -33,7 +33,7 @@ public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersV
 
         // i have to pass listener into costructor, cause i cannot access to static field
 
-        public PlayersViewHolder(@NonNull View itemView, OnItemClickListener listener) {
+        public DriversViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
             imageInvite = itemView.findViewById(R.id.inviteImg);
             nickname = itemView.findViewById(R.id.nicknameUser);
@@ -59,14 +59,14 @@ public class DriversAdapter extends RecyclerView.Adapter<DriversAdapter.PlayersV
 
     @NonNull
     @Override
-    public PlayersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public DriversViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_entry_offer,parent,false);
-        PlayersViewHolder mvh = new PlayersViewHolder(v,customListener);
+        DriversViewHolder mvh = new DriversViewHolder(v,customListener);
         return  mvh;
 
     }
 
-    public void onBindViewHolder(@NonNull DriversAdapter.PlayersViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DriversViewHolder holder, int position) {
         UserItem currentDriver = driverList.get(position);
 
         holder.imageInvite.setImageResource(currentDriver.getInviteImg());
